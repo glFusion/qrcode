@@ -1,42 +1,46 @@
 <?php
-
-// Reminder: always indent with 4 spaces (no tabs).
-// +---------------------------------------------------------------------------+
-// | Qrcode Plugin for Geeklog                                                 |
-// +---------------------------------------------------------------------------+
-// | plugins/qrcode/functions.inc                                              |
-// +---------------------------------------------------------------------------+
-// | Copyright (C) 2010 by the following authors:                              |
-// |                                                                           |
-// | Authors: Yoshinori Tahara - dengen - taharaxp AT gmail DOT com            |
-// +---------------------------------------------------------------------------+
-// |                                                                           |
-// | This program is free software; you can redistribute it and/or             |
-// | modify it under the terms of the GNU General Public License               |
-// | as published by the Free Software Foundation; either version 2            |
-// | of the License, or (at your option) any later version.                    |
-// |                                                                           |
-// | This program is distributed in the hope that it will be useful,           |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of            |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             |
-// | GNU General Public License for more details.                              |
-// |                                                                           |
-// | You should have received a copy of the GNU General Public License         |
-// | along with this program; if not, write to the Free Software Foundation,   |
-// | Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.           |
-// |                                                                           |
-// +---------------------------------------------------------------------------+
+//  $Id: locator.php 95 2011-02-16 21:57:43Z root $
+/**
+*   API functions for creating QR Codes.
+*   Based on the Geeklog plugin by Yoshinori Tahara
+*
+*   @author     Lee Garner <lee@leegarner.com>
+*   @author     Yoshinori Tahara <taharaxp@gmail.com>
+*   @copyright  Copyright (c) 2010-2014 Lee Garner <lee@leegarner.com>
+*   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
+*   @package    qrcode
+*   @version    0.0.1
+*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*               GNU Public License v2 or later
+*   @filesource
+*/
 
 // this file can't be used on its own
-if (strpos(strtolower($_SERVER['PHP_SELF']), 'functions.inc') !== false) {
-    die ('This file can not be used on its own.');
+if (!defined('GVERSION')) {
+    die('This file can not be used on its own.');
 }
 
 $_QRC_CONF = array();
 
-/**
- * Language file include
- */
+/** Include the glFusion configuration class if not done already */
+require_once $_CONF['path_system'] . 'classes/config.class.php';
+
+$qrc_config = config::get_instance();
+$_QRC_CONF = $qrc_config->get_config('qrcode');
+
+require_once dirname(__FILE__) . '/qrcode.php';
+
+define('QRC_PI_PATH', $_CONF['path'] . 'plugins/' . $_QRC_CONF['pi_name']);
+define('QRC_URL', $_CONF['site_url'] . '/' . $_QRC_CONF['pi_name']);
+define('QRC_ADMIN_URL', $_CONF['site_admin_url'] . '/plugins/' . $_QRC_CONF['pi_name']);
+define('QRC_CLASSPATH', QRC_PI_PATH . '/classes');
+
+/** Include the user-supplied configuration file, if any */
+if (is_file(QRC_PI_PATH . '/config.php')) {
+    include_once QRC_PI_PATH . '/config.php';
+}
+
+/** Language file include */
 $plugin_path = $_CONF['path'] . 'plugins/qrcode/';
 $langfile = $plugin_path . 'language/' . $_CONF['language'] . '.php';
 if (file_exists($langfile)) {
@@ -45,19 +49,9 @@ if (file_exists($langfile)) {
     require_once $plugin_path . 'language/english.php';
 }
 
-/**
-* Check and see if we need to load the plugin configuration
-*/
-require_once $_CONF['path_system'] . 'classes/config.class.php';
-$plg_config = config::get_instance();
-$temp = $plg_config->get_config('qrcode');
-if (is_array($temp)) {
-    $_QRC_CONF = array_merge($_QRC_CONF, $temp);
-}
+function USES_qrcode_class_qrcode()
+{   include_once QRC_CLASSPATH . '/qrcode.class.php';   }
 
-// +---------------------------------------------------------------------------+
-// | Geeklog Plugin API Implementation                                         |
-// +---------------------------------------------------------------------------+
 
 /**
  * Returns the current plugin code version
@@ -74,6 +68,7 @@ function plugin_chkVersion_qrcode()
     return $inst_parms['info']['pi_version'];
 }
 
+
 /**
 * Automatic uninstall function for plugins
 *
@@ -88,6 +83,7 @@ function plugin_autouninstall_qrcode()
     return QRC_autouninstall();
 }
 
+
 /**
 * Called by the plugin Editor to run the SQL Update for a plugin update
 */
@@ -100,13 +96,14 @@ function plugin_upgrade_qrcode()
     return QRC_upgrade();
 }
 
+
 /**
-* Implements the [qrcode:] autotag.
+*   Implements the [qrcode:] autotag.
 *
-* @param    string  $op         operation to perform
-* @param    string  $content    item (e.g. story text), including the autotag
-* @param    array   $autotag    parameters used in the autotag
-* @param    mixed               tag names (for $op='tagname') or formatted content
+*   @param    string  $op         operation to perform
+*   @param    string  $content    item (e.g. story text), including the autotag
+*   @param    array   $autotag    parameters used in the autotag
+*   @param    mixed               tag names (for $op='tagname') or formatted content
 *
 */
 function plugin_autotags_qrcode($op, $content = '', $autotag = '')
@@ -257,9 +254,28 @@ function QRC_getVersion($version, $ecc_level, $data) {
     return $version;
 }
 
+/*function QRC_qrcode(&$params)
+{
+    USES_qrcode_class_qrcode();
+    return qrCode::MakeCode($params);
+}*/
+
+
+/**
+*   Create the QR Code.
+*   Creates the image file and returns the <img> tag to display the image.
+*
+*   @param  array   $params     Parameters. 'data' element is required.
+*   @return string      URL to code image
+*/
 function QRC_qrcode(&$params)
 {
     global $_CONF, $_QRC_CONF;
+
+    // Call the cache cleaning function.
+    if ($_QRC_CONF['cache_clean_interval'] >= 0) {
+        QRC_cleanCache();
+    }
 
     if (empty($params['image_type'])) {
         $params['image_type'] = $_QRC_CONF['image_type'];
@@ -285,32 +301,103 @@ function QRC_qrcode(&$params)
                . 's='.$params['module_size'] . 'e='.$params['ecc_level']);
 
     $filename = $md5 . $ext;
-    $file_path = $_CONF['path_html'] . 'qrcode/images/' . $filename;
+    $filepath = $_QRC_CONF['img_path'];
+    $filespec = $filepath . $filename;
 
-    if (!file_exists($file_path)) {
-        if (!is_writable($_CONF['path_html'] . 'qrcode/images/')) {
+    if (!file_exists($filespec)) {
+        if (!is_writable($filepath)) {
             $html = '<div>Can not write the QR code image.</div>'.LB;
             return $html;
         }
         include_once $_CONF['path'] . 'plugins/qrcode/include/functions.php';
-        $params['image_filename'] = $file_path;
+        $params['image_filename'] = $filespec;
         QRC_createQRImage($params);
     }
     $params['version'] = QRC_getVersion(1, $params['ecc_level'], $params['data']);
     $size = $params['module_size'] * 25 + $params['version'] * ($params['module_size'] * 4);
-    $html = '<div class="qrcode">' . LB
+    /*$html = '<div class="qrcode">' . LB
           . '<img alt="QR code" width="' . $size . '" height="' . $size
           . '" src="' . $_CONF['site_url'] . '/qrcode/images/' . $filename . '"' . XHTML . '>' . LB
           . '</div>' . LB;
-
+    */
+    $html = '<img alt="QR code" width="' . $size . '" height="' . $size .
+          '" src="' . QRC_URL . '/img.php?img=' .$filename . '" />';
     return $html;
 }
 
+
+/**
+*   Clean out old QR code images.
+*/
+function QRC_cleanCache()
+{
+    global $_QRC_CONF;
+
+    if ($_QRC_CONF['cache_clean_interval'] < 0) {
+        // No cache cleaning required
+        return false;
+    }
+    $lastCleanFile = $_QRC_CONF['img_path'] . 'qrc_cacheLastCleanTime.touch';
+        
+    //If this is a new timthumb installation we need to create the file
+    if (!is_file($lastCleanFile)) {
+        if (!touch($lastCleanFile)) {
+            COM_errorLog("QRCODE: Cannot touch cache clean file $lastCleanFile");
+        }
+        return false;
+    }
+
+    $cache_clean_interval = $_QRC_CONF['cache_clean_interval'] * 60;  // minutes
+    $cache_max_age = $_QRC_CONF['cache_max_age'] * 86400; // days
+    if (@filemtime($lastCleanFile) < (time() - $cache_clean_interval)) {
+        //Cache was last cleaned more than FILE_CACHE_TIME_BETWEEN_CLEANS ago
+        if (!touch($lastCleanFile)) {
+            $this->error("Could not create cache clean timestamp file.");
+        }
+        $files = glob($_QRC_CONF['img_path'] . '*.' . $_QRC_CONF['image_type']);
+        if ($files) {
+            $timeAgo = time() - $cache_max_age;
+            foreach ($files as $file) {
+                if (@filemtime($file) < $timeAgo) {
+                    @unlink($file);
+                }
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+
+/**
+*   Show the site URL in a block as a QR Code
+*
+*   @return string  Image URL
+*/
 function phpblock_qrcode()
 {
-    $params= array();
-    $params['data'] = COM_buildURL(COM_getCurrentURL());
+    $params = array(
+        'data' => COM_buildURL(COM_getCurrentURL()),
+        'module_size' => '3',
+    );
     return QRC_qrcode($params);
+}
+
+
+/**
+*   Service function to allow plugins to get a QR code
+*
+*   @param  array   $args       Arguments, 'data' element is required.
+*   @param  mixed   &$output    Receives the QR code URL string
+*   @param  mixed   &$svc_msg   Not used
+*   @return integer     Status code (PLG_RET_OK, PLG_RET_ERROR).
+*/
+function service_getcode_qrcode($args, &$output, &$svc_msg)
+{
+    if (!is_array($args)) return PLG_RET_ERROR;
+    if (!isset($args['data'])) return PLG_RET_ERROR;
+    $output  = QRC_qrcode($args);
+    return PLG_RET_OK;
 }
 
 ?>
