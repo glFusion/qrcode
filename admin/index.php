@@ -1,5 +1,5 @@
 <?php
-
+//  $Id$
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
 // | Qrcode Plugin 1.0.0                                                       |
