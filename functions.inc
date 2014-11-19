@@ -1,5 +1,5 @@
 <?php
-//  $Id: locator.php 95 2011-02-16 21:57:43Z root $
+//  $Id$
 /**
 *   API functions for creating QR Codes.
 *   Based on the Geeklog plugin by Yoshinori Tahara

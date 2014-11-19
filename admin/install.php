@@ -1,5 +1,5 @@
 <?php
-//  $Id: install.php 70 2010-05-03 16:44:09Z root $
+//  $Id$
 /**
 *   Manual installation for the QRcode plugin
 *
