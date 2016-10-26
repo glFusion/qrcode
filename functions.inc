@@ -325,24 +325,51 @@ function QRC_qrcode(&$params)
 }
 
 
+/**
+*   Get the URL to a QRCode image.
+*   This returns only the image URL, leaving it up to to the caller
+*   to create the complete image tag.
+*
+*   @param  string  $filename   Image filename
+*   @return string      URL to render the image
+*/
+function QRC_url($filename)
+{
+    return QRC_URL . '/img.php?img=' . $filename;
+}
+
+
+/**
+*   Get the HTML for a QRCode image.
+*   Makes some assumptions about the image size, use
+*   QRC_url() by itself to get just the image URL.
+*
+*   @uses   QRC_url()
+*   @param  string  $filename   Image filename
+*   @return string      Complete image tag for the URL
+*/
 function QRC_html($filename)
 {
     global $_QRC_CONF;
 
     $size = $_QRC_CONF['module_size'] * 50;
     $html = '<img alt="QR code" width="' . $size . 
-            '" height="' . $size . '" src="' . QRC_URL .
-            '/img.php?img=' .$filename . '" />';
-    //$html = '<img alt="QR code" src="' . QRC_URL .
+            '" height="' . $size . '" src="' . QRC_url($filename) '" />';
     return $html;
 }
 
 
+/**
+*   Get the actual path to a QRCode image file
+*
+*   @param  string  $filename   Image filename
+*   @return string          Full path to the image file
+*/
 function QRC_path($filename)
 {
     global $_QRC_CONF;
-    $filepath = $_QRC_CONF['img_path'] . $filename;
-    return $filepath;
+
+    return $_QRC_CONF['img_path'] . $filename;
 }
 
 
@@ -406,6 +433,11 @@ function phpblock_qrcode()
 
 /**
 *   Service function to allow plugins to get a QR code
+*   $output is an array populated with useful string values for the image:
+*       - img  => Image filename
+*       - path => Filesystem path to the image
+*       - html => Full HTML "img src" tag using default sizes and styles
+*       - url  => URL only to the image to allow styling by the caller
 *
 *   @param  array   $args       Arguments, 'data' element is required.
 *   @param  mixed   &$output    Receives the QR code URL string
@@ -420,6 +452,7 @@ function service_getcode_qrcode($args, &$output, &$svc_msg)
     $output['img']  = QRC_qrcode($args);
     $output['path'] = QRC_path($output['img']);
     $output['html'] = QRC_html($output['img']);
+    $output['url']  = QRC_url($output['img']);
     return PLG_RET_OK;
 }
 
