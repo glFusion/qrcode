@@ -17,7 +17,7 @@ Options:
 The defaults for size, type and ECC are set in the plugin configuration.
 
 ##Service Function
-Plugins may request a QRCode image by calling LIGLIB_invokeService which will
+Plugins may request a QRCode image by calling LGLIB_invokeService which will
 call the QRCode plugin's service function, if available.
 
 Usage: $status = LGLIB_invokeService('qrcode', array('data'=>'data to encode'), $output, $svc_msg);
