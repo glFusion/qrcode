@@ -121,8 +121,8 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
                 $params['data'] = COM_applyFilter($autotag['parm1']);
                 break;
         }
-        $params['module_size'] = $_QRC_CONF['module_size'];
-        $params['image_type'] = $_QRC_CONF['image_type'];
+
+        // These parameters have default values in QRC_qrcode if not defined
         if (!empty($autotag['parm2'])) {
             $parm2 = explode(' ', COM_applyFilter($autotag['parm2']));
             foreach ($parm2 as $p) {
@@ -354,7 +354,7 @@ function QRC_html($filename)
 
     $size = $_QRC_CONF['module_size'] * 50;
     $html = '<img alt="QR code" width="' . $size . 
-            '" height="' . $size . '" src="' . QRC_url($filename) '" />';
+            '" height="' . $size . '" src="' . QRC_url($filename) . '" />';
     return $html;
 }
 
