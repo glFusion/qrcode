@@ -3,8 +3,8 @@
     <name>QRcode</name>
     <description>QRcode generator for glFusion</description>
     <version>1.0.0</version>
-    <glfusionversion>1.2.0</glfusionversion>
-    <phpversion>5.1.0</phpversion>
+    <glfusionversion>1.6.0</glfusionversion>
+    <phpversion>5.6.0</phpversion>
     <url>http://www.leegarner.com</url>
     <maintainer>Lee Garner</maintainer>
 </plugin>

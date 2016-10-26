@@ -1,5 +1,4 @@
 <?php
-//  $Id$
 /**
 *   Static configuration items for the QRcode plugin.
 *
@@ -15,7 +14,7 @@
 $_QRC_CONF['pi_version']        = '1.0.0';
 $_QRC_CONF['pi_name']           = 'qrcode';
 $_QRC_CONF['pi_display_name']   = 'QRcode';
-$_QRC_CONF['gl_version']        = '1.2.0';
+$_QRC_CONF['gl_version']        = '1.6.0';
 $_QRC_CONF['pi_url']            = 'http://www.leegarner.com';
 
 ?>
