@@ -1,15 +1,14 @@
 <?php
-//  $Id$
 /**
 *   API functions for creating QR Codes.
 *   Based on the Geeklog plugin by Yoshinori Tahara
 *
 *   @author     Lee Garner <lee@leegarner.com>
 *   @author     Yoshinori Tahara <taharaxp@gmail.com>
-*   @copyright  Copyright (c) 2010-2014 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2010-2016 Lee Garner <lee@leegarner.com>
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
-*   @version    0.0.1
+*   @version    1.0.0
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource
@@ -54,18 +53,14 @@ function USES_qrcode_class_qrcode()
 
 
 /**
- * Returns the current plugin code version
- *
- * @return string    plugin version
- */
+*   Returns the current plugin code version
+*
+*   @return string  plugin version
+*/
 function plugin_chkVersion_qrcode()
 {
-    global $_CONF;
-
-    require_once $_CONF['path'] . 'plugins/qrcode/autoinstall.php';
-    $inst_parms = plugin_autoinstall_qrcode('qrcode');
-
-    return $inst_parms['info']['pi_version'];
+    global $_QRC_CONF;
+    return $_QRC_CONF['pi_version'];
 }
 
 
@@ -108,7 +103,7 @@ function plugin_upgrade_qrcode()
 */
 function plugin_autotags_qrcode($op, $content = '', $autotag = '')
 {
-    global $_CONF, $_TABLES;
+    global $_CONF;
 
     if ($op == 'tagname') {
         return 'qrcode';
@@ -126,6 +121,8 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
                 $params['data'] = COM_applyFilter($autotag['parm1']);
                 break;
         }
+        $params['module_size'] = $_QRC_CONF['module_size'];
+        $params['image_type'] = $_QRC_CONF['image_type'];
         if (!empty($autotag['parm2'])) {
             $parm2 = explode(' ', COM_applyFilter($autotag['parm2']));
             foreach ($parm2 as $p) {
@@ -152,8 +149,9 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
 
         $block = '';
         if (!empty($params['data'])) {
-            $block = QRC_qrcode($params);
+            $block = QRC_html(QRC_qrcode($params));
         }
+
         $content = str_replace($autotag['tagstr'], $block, $content);
 
         return $content;
@@ -266,7 +264,7 @@ function QRC_getVersion($version, $ecc_level, $data) {
 *   Creates the image file and returns the <img> tag to display the image.
 *
 *   @param  array   $params     Parameters. 'data' element is required.
-*   @return string      URL to code image
+*   @return string      Filename of code image. Call QRC_path() or QRC_html() to get paths.
 */
 function QRC_qrcode(&$params)
 {
@@ -286,7 +284,6 @@ function QRC_qrcode(&$params)
         $params['image_type'] = 'png';
     }
     
-    $md5 = md5($params['data']);
     $ext = ($params['image_type'] == 'jpeg') ? '.jpg' : '.png';
 
     if (empty($params['module_size'])) {
@@ -296,6 +293,7 @@ function QRC_qrcode(&$params)
     if (empty($params['ecc_level'])) {
         $params['ecc_level'] = $_QRC_CONF['ecc_level'];
     }
+    $params['version'] = QRC_getVersion(1, $params['ecc_level'], $params['data']);
 
     $md5 = md5($params['data'] . 't='.$params['image_type']
                . 's='.$params['module_size'] . 'e='.$params['ecc_level']);
@@ -313,16 +311,38 @@ function QRC_qrcode(&$params)
         $params['image_filename'] = $filespec;
         QRC_createQRImage($params);
     }
-    $params['version'] = QRC_getVersion(1, $params['ecc_level'], $params['data']);
-    $size = $params['module_size'] * 25 + $params['version'] * ($params['module_size'] * 4);
-    /*$html = '<div class="qrcode">' . LB
+
+    /*$size = $params['module_size'] * 25 + $params['version'] * ($params['module_size'] * 4);
+    $html = '<div class="qrcode">' . LB
           . '<img alt="QR code" width="' . $size . '" height="' . $size
           . '" src="' . $_CONF['site_url'] . '/qrcode/images/' . $filename . '"' . XHTML . '>' . LB
           . '</div>' . LB;
     */
-    $html = '<img alt="QR code" width="' . $size . '" height="' . $size .
+    /*$html = '<img alt="QR code" width="' . $size . '" height="' . $size .
           '" src="' . QRC_URL . '/img.php?img=' .$filename . '" />';
+    */
+    return $filename;
+}
+
+
+function QRC_html($filename)
+{
+    global $_QRC_CONF;
+
+    $size = $_QRC_CONF['module_size'] * 50;
+    $html = '<img alt="QR code" width="' . $size . 
+            '" height="' . $size . '" src="' . QRC_URL .
+            '/img.php?img=' .$filename . '" />';
+    //$html = '<img alt="QR code" src="' . QRC_URL .
     return $html;
+}
+
+
+function QRC_path($filename)
+{
+    global $_QRC_CONF;
+    $filepath = $_QRC_CONF['img_path'] . $filename;
+    return $filepath;
 }
 
 
@@ -380,7 +400,7 @@ function phpblock_qrcode()
         'data' => COM_buildURL(COM_getCurrentURL()),
         'module_size' => '3',
     );
-    return QRC_qrcode($params);
+    return QRC_html(QRC_qrcode($params));
 }
 
 
@@ -396,7 +416,10 @@ function service_getcode_qrcode($args, &$output, &$svc_msg)
 {
     if (!is_array($args)) return PLG_RET_ERROR;
     if (!isset($args['data'])) return PLG_RET_ERROR;
-    $output  = QRC_qrcode($args);
+    $output = array();
+    $output['img']  = QRC_qrcode($args);
+    $output['path'] = QRC_path($output['img']);
+    $output['html'] = QRC_html($output['img']);
     return PLG_RET_OK;
 }
 
