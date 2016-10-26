@@ -1,5 +1,4 @@
 <?php
-//  $Id$
 /**
 *   Automatic plugin installation for the QR Code plugin
 *   Based on the Geeklog plugin by Yoshinori Tahara
@@ -9,11 +8,13 @@
 *   @copyright  Copyright (c) 2010-2014 Lee Garner <lee@leegarner.com>
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
-*   @version    0.0.1
+*   @version    1.0.0
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource
 */
+
+require_once $_CONF['path'].'plugins/qrcode/qrcode.php';
 
 /**
 *   Plugin autoinstall function
@@ -21,50 +22,75 @@
 *   @param    string  $pi_name    Plugin name
 *   @return   array               Plugin information
 */
-function plugin_autoinstall_qrcode($pi_name)
+function plugin_install_qrcode()
 {
-    $pi_name         = 'qrcode';
-    $pi_display_name = 'QRcode';
-    $pi_admin        = $pi_display_name . ' Admin';
+    global $_QRC_CONF, $_CONF;
 
-    $inst_parms = array(
-        'info' => array(
-            'pi_name'         => $pi_name,
-            'pi_display_name' => $pi_display_name,
-            'pi_version'      => '1.0.0',
-            'pi_gl_version'   => '1.2.0',
-            'pi_homepage'     => 'http://www.trybase.com/~dengen/log/',
+    $inst_params = array(
+        'installer' => array(
+            'type' => 'installer', 
+            'version' => '1', 
+            'mode' => 'install'),
+
+        'plugin' => array(
+            'type' => 'plugin',
+            'name' => $_QRC_CONF['pi_name'],
+            'display' => $_QRC_CONF['pi_display_name'],
+            'ver' => $_QRC_CONF['pi_varsion'],
+            'gl_ver' => $_QRC_CONF['gl_version'],
         ),
-        'groups' => array(
-            $pi_admin => 'Users in this group can administer the '
-                     . $pi_display_name . ' plugin'
+
+        array('type' => 'group', 
+            'group' => $_QRC_CONF['pi_name'] .' Admin', 
+            'desc' => 'Users in this group can administer the ' .
+                        $_QRC_CONF['pi_display_name'] . ' plugin',
+            'variable' => 'admin_group_id', 
+            'admin' => true,
+            'addroot' => true,
         ),
-        'features' => array(
-            $pi_name . '.admin'    => 'Full access to ' . $pi_display_name . ' plugin'
+
+        array('type' => 'feature', 
+            'feature' => $_QRC_CONF['pi_name'] . '.admin', 
+            'desc' => 'Can administer the ' . $_QRC_CONF['pi_display_name'] . ' plugin',
+            'variable' => 'admin_feature_id',
         ),
-        'mappings' => array(
-            $pi_name . '.admin'    => array($pi_admin)
+
+        array('type' => 'mapping', 
+            'group' => 'admin_group_id', 
+            'feature' => 'admin_feature_id',
+            'log' => 'Adding admin feature to the admin group',
         ),
-        'tables' => array(
+
+        array(
+            'type'  => 'mkdir',
+            'dirs' => array($_CONF['path'] . 'data/' . $_QRC_CONF['pi_name']),
         ),
+
     );
 
-    return $inst_parms;
+    COM_errorLog("Attempting to install the {$_QRC_CONF['pi_display_name']} plugin", 1);
+
+    USES_lib_install();
+    $ret = INSTALLER_install($inst_params);
+    if ($ret > 0) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 
 /**
 *   Load plugin configuration from database
 *
-*   @param    string  $pi_name    Plugin name
 *   @return   boolean             true on success, otherwise false
 *   @see      plugin_initconfig_qrcode
 */
-function plugin_load_configuration_qrcode($pi_name)
+function plugin_load_configuration_qrcode()
 {
-    global $_CONF;
+    global $_CONF, $_QRC_CONF;
 
-    $base_path = $_CONF['path'] . 'plugins/' . $pi_name . '/';
+    $base_path = $_CONF['path'] . 'plugins/' . $_QRC_CONF['pi_name'] . '/';
 
     require_once $_CONF['path_system'] . 'classes/config.class.php';
     require_once $base_path . 'install_defaults.php';
@@ -122,13 +148,13 @@ function QRC_autouninstall()
         /* give the name of the tables, without $_TABLES[] */
         'tables' => array(),
         /* give the full name of the group, as in the db */
-        'groups' => array('QRcode Admin'),
+        'groups' => array('qrcode Admin'),
         /* give the full name of the feature, as in the db */
         'features' => array('qrcode.admin'),
         /* give the full name of the block, including 'phpblock_', etc */
         'php_blocks' => array(),
         /* give all vars with their name */
-        'vars' => array()
+        'vars' => array('qrcode_gid'),
     );
 }
 
