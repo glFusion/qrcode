@@ -99,7 +99,6 @@ function QRC_createQRImage(&$params)
 	if (!empty($params['image_type'])) {
 		$qrcode_image_type = $params['image_type'];
 	}
-
 	$qrcode_version = QRC_getVersion(1, $qrcode_error_correct, $qrcode_data_string);
 
 /*
@@ -129,6 +128,7 @@ $qrcode_structureappend_originaldata=@$_GET["o"];
 			$qrcode_module_size=2;
 		}
 	}
+
 //	$qrcode_data_string=rawurldecode($qrcode_data_string);
 	$data_length=strlen($qrcode_data_string);
 	if ($data_length<=0) {
@@ -136,6 +136,7 @@ $qrcode_structureappend_originaldata=@$_GET["o"];
 		exit;
 	}
 	$data_counter=0;
+
 	if ($qrcode_structureappend_n>1
 	 && $qrcode_structureappend_n<=16
 	 && $qrcode_structureappend_m>0
@@ -171,8 +172,8 @@ $qrcode_structureappend_originaldata=@$_GET["o"];
 
 	/*	--- determine encode mode */
 
-	if (preg_match("[^0-9]",$qrcode_data_string)){
-		if (preg_match("[^0-9A-Z \$\*\%\+\-\.\/\:]",$qrcode_data_string)) {
+	if (preg_match("/[^0-9]/",$qrcode_data_string)){
+		if (preg_match("{[^0-9A-Z \$\*\%\+\-\.\/\:]}",$qrcode_data_string)) {
 
 		 /*	 --- 8bit byte mode */
 
