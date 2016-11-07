@@ -1,5 +1,4 @@
 <?php
-//  $Id$
 /**
 *   Create configuration items for the QR Code plugin
 *   Based on the Geeklog plugin by Yoshinori Tahara

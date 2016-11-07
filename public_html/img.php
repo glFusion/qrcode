@@ -1,5 +1,4 @@
 <?php
-//  $Id$
 /**
 *   Allow the downloading of original images to authorized visitors
 *  

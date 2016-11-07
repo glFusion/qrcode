@@ -36,7 +36,7 @@ function plugin_install_qrcode()
             'type' => 'plugin',
             'name' => $_QRC_CONF['pi_name'],
             'display' => $_QRC_CONF['pi_display_name'],
-            'ver' => $_QRC_CONF['pi_varsion'],
+            'ver' => $_QRC_CONF['pi_version'],
             'gl_ver' => $_QRC_CONF['gl_version'],
         ),
 
