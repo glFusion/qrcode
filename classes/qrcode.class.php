@@ -1,5 +1,4 @@
 <?php
-//  $Id$
 /**
 *   Class to handle creating qrcodes
 *

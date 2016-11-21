@@ -33,11 +33,12 @@ function plugin_install_qrcode()
             'mode' => 'install'),
 
         'plugin' => array(
-            'type' => 'plugin',
-            'name' => $_QRC_CONF['pi_name'],
-            'display' => $_QRC_CONF['pi_display_name'],
-            'ver' => $_QRC_CONF['pi_version'],
-            'gl_ver' => $_QRC_CONF['gl_version'],
+            'type'      => 'plugin',
+            'name'      => $_QRC_CONF['pi_name'],
+            'display'   => $_QRC_CONF['pi_display_name'],
+            'ver'       => $_QRC_CONF['pi_version'],
+            'gl_ver'    => $_QRC_CONF['gl_version'],
+            'url'       => $_QRC_CONF['pi_url'], 
         ),
 
         array('type' => 'group', 
