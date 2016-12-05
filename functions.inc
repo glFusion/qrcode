@@ -80,14 +80,11 @@ function plugin_autouninstall_qrcode()
 
 
 /**
-* Called by the plugin Editor to run the SQL Update for a plugin update
+*   Upgrade the QRCode plugin. 
 */
 function plugin_upgrade_qrcode()
 {
-    global $_CONF;
-
-    require_once $_CONF['path'] . 'plugins/qrcode/autoinstall.php';
-
+    require_once QRC_PI_PATH . '/upgrade.inc.php';
     return QRC_upgrade();
 }
 

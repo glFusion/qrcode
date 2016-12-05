@@ -4,7 +4,7 @@
 *
 *   @author     Lee Garner <lee@leegarner.com>
 *   @copyright  Copyright (c) 2009-2011 Lee Garner <lee@leegarner.com>
-*   @package    locator
+*   @package    qrcode
 *   @version    1.0.0
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later

@@ -98,38 +98,6 @@ function plugin_load_configuration_qrcode()
 
 
 /**
-*   Check if the plugin is compatible with this Geeklog version
-*
-*   @param    string  $pi_name    Plugin name
-*   @return   boolean             true: plugin compatible; false: not compatible
-*/
-function plugin_compatible_with_this_version_qrcode($pi_name)
-{
-    if (!function_exists('COM_truncate') || !function_exists('MBYTE_strpos')) {
-        return false;
-    }
-
-    if (!function_exists('SEC_createToken')) {
-        return false;
-    }
-
-    if (!function_exists('COM_showMessageText')) {
-        return false;
-    }
-
-    if (!function_exists('SEC_getTokenExpiryNotice')) {
-        return false;
-    }
-
-    if (!function_exists('SEC_loginRequiredForm')) {
-        return false;
-    }
-
-    return true;
-}
-
-
-/**
 *   Automatic uninstall function for plugins
 *
 *   @return   array
@@ -154,39 +122,6 @@ function QRC_autouninstall()
         /* give all vars with their name */
         'vars' => array('qrcode_gid'),
     );
-}
-
-
-/**
-*   Called by the plugin Editor to run the SQL Update for a plugin update
-*/
-function QRC_upgrade()
-{
-    global $_TABLES;
-
-    $pi_name = 'qrcode';
-    $installed_version = DB_getItem($_TABLES['plugins'], 'pi_version', "pi_name = '$pi_name'");
-
-    $function = 'plugin_chkVersion_' . $pi_name;
-    $code_version = $function();
-    if ($installed_version == $code_version) return true;
-
-    $function = 'plugin_compatible_with_this_version_' . $pi_name;
-    if (!$function($pi_name)) return 3002;
-
-    $function = 'plugin_autoinstall_' . $pi_name;
-    $inst_parms = $function($pi_name);
-    $pi_gl_version = $inst_parms['info']['pi_gl_version'];
-
-    // update the version numbers
-    DB_query("UPDATE {$_TABLES['plugins']} "
-           . "SET pi_version = '$code_version', pi_gl_version = '$pi_gl_version' "
-           . "WHERE pi_name = '$pi_name'");
-
-    COM_errorLog(ucfirst($pi_name)
-        . " plugin was successfully updated to version $code_version.");
-
-    return true;
 }
 
 ?>
