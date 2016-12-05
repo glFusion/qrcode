@@ -159,6 +159,32 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
 }
 
 
+/**
+*   Get the URL to the configuration help file.
+*
+*   @param  string  $option     Config option selected
+*   @param  string  $doclang    Document language
+*   @return string              URL to document
+*/
+function plugin_getconfigelementhelp_qrcode($option, $doclang='english')
+{
+    global $_QRC_CONF;
+
+    if (!function_exists('LGLIB_getDocuRL'))
+        return false;
+
+    $doc_url = LGLIB_getDocURL('config.html', $_QRC_CONF['pi_name'], $doclang);
+    if (empty($doc_url))
+        return false;
+
+    if (!empty($option)) {
+        $file .= '#desc_' . $option;
+    }
+
+    return array($doc_url . $file, 0);
+}
+
+
 function QRC_getVersion($version, $ecc_level, $data) {
 
     if (empty($version)) $version = 1;
