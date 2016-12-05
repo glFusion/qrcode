@@ -4,10 +4,10 @@
 *
 *   @author     Lee Garner <lee@leegarner.com>
 *   @author     Yoshinori Tahara <taharaxp@gmail.com>
-*   @copyright  Copyright (c) 2010-2012 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2010-2016 Lee Garner <lee@leegarner.com>
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
-*   @version    0.0.1
+*   @version    1.0.0
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource
@@ -169,6 +169,12 @@ class qrCode
     }
 
 
+    /**
+    *   Determine if an image file exists
+    *
+    *   @param  string  $filename   Filename only of image
+    *   @return boolean     True if the file exists, False if not
+    */
     public static function file_exists($filename)
     {
         global $_CONF, $_QRC_CONF;
@@ -180,10 +186,22 @@ class qrCode
     }
 
 
-    public static function MimeType()
+    /**
+    *   Get the mime-type value depending on the image type used
+    *
+    *   @param  string  $type   Type of image, JPG or PNG
+    *   @return string          Mime type corresponding to image type
+    */
+    public static function MimeType($type='')
     {
         global $_QRC_CONF;
-        switch ($_QRC_CONF['image_type']) {
+
+        if ($type == '') $type = $_QRC_CONF['image_type'];
+        else $type = strtolower($type);
+
+        $type = $type == 'jpg' ? 'jpg' : 'png';
+
+        switch ($type) {
         case 'jpg':
             return 'image/jpeg';
             break;

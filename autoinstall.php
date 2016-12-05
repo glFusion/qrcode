@@ -5,7 +5,7 @@
 *
 *   @author     Lee Garner <lee@leegarner.com>
 *   @author     Yoshinori Tahara <taharaxp@gmail.com>
-*   @copyright  Copyright (c) 2010-2014 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2010-2016 Lee Garner <lee@leegarner.com>
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
 *   @version    1.0.0
@@ -16,6 +16,52 @@
 
 require_once $_CONF['path'].'plugins/qrcode/qrcode.php';
 
+global $INSTALL_plugin;
+$INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
+    'installer' => array(
+        'type' => 'installer', 
+        'version' => '1', 
+        'mode' => 'install',
+    ),
+
+   'plugin' => array(
+       'type'      => 'plugin',
+       'name'      => $_QRC_CONF['pi_name'],
+       'display'   => $_QRC_CONF['pi_display_name'],
+       'ver'       => $_QRC_CONF['pi_version'],
+       'gl_ver'    => $_QRC_CONF['gl_version'],
+       'url'       => $_QRC_CONF['pi_url'], 
+   ),
+
+   array('type' => 'group', 
+       'group' => $_QRC_CONF['pi_name'] .' Admin', 
+       'desc' => 'Users in this group can administer the ' .
+                    $_QRC_CONF['pi_display_name'] . ' plugin',
+       'variable' => 'admin_group_id', 
+       'admin' => true,
+       'addroot' => true,
+    ),
+
+    array('type' => 'feature', 
+        'feature' => $_QRC_CONF['pi_name'] . '.admin', 
+        'desc' => 'Can administer the ' . $_QRC_CONF['pi_display_name'] . ' plugin',
+        'variable' => 'admin_feature_id',
+    ),
+
+    array('type' => 'mapping', 
+        'group' => 'admin_group_id', 
+        'feature' => 'admin_feature_id',
+        'log' => 'Adding admin feature to the admin group',
+    ),
+
+    array(
+        'type'  => 'mkdir',
+        'dirs' => array($_CONF['path'] . 'data/' . $_QRC_CONF['pi_name']),
+    ),
+
+);
+
+
 /**
 *   Plugin autoinstall function
 *
@@ -24,60 +70,13 @@ require_once $_CONF['path'].'plugins/qrcode/qrcode.php';
 */
 function plugin_install_qrcode()
 {
-    global $_QRC_CONF, $_CONF;
-
-    $inst_params = array(
-        'installer' => array(
-            'type' => 'installer', 
-            'version' => '1', 
-            'mode' => 'install'),
-
-        'plugin' => array(
-            'type'      => 'plugin',
-            'name'      => $_QRC_CONF['pi_name'],
-            'display'   => $_QRC_CONF['pi_display_name'],
-            'ver'       => $_QRC_CONF['pi_version'],
-            'gl_ver'    => $_QRC_CONF['gl_version'],
-            'url'       => $_QRC_CONF['pi_url'], 
-        ),
-
-        array('type' => 'group', 
-            'group' => $_QRC_CONF['pi_name'] .' Admin', 
-            'desc' => 'Users in this group can administer the ' .
-                        $_QRC_CONF['pi_display_name'] . ' plugin',
-            'variable' => 'admin_group_id', 
-            'admin' => true,
-            'addroot' => true,
-        ),
-
-        array('type' => 'feature', 
-            'feature' => $_QRC_CONF['pi_name'] . '.admin', 
-            'desc' => 'Can administer the ' . $_QRC_CONF['pi_display_name'] . ' plugin',
-            'variable' => 'admin_feature_id',
-        ),
-
-        array('type' => 'mapping', 
-            'group' => 'admin_group_id', 
-            'feature' => 'admin_feature_id',
-            'log' => 'Adding admin feature to the admin group',
-        ),
-
-        array(
-            'type'  => 'mkdir',
-            'dirs' => array($_CONF['path'] . 'data/' . $_QRC_CONF['pi_name']),
-        ),
-
-    );
+    global $_QRC_CONF, $_CONF, $INSTALL_plugin;
 
     COM_errorLog("Attempting to install the {$_QRC_CONF['pi_display_name']} plugin", 1);
 
     USES_lib_install();
-    $ret = INSTALLER_install($inst_params);
-    if ($ret > 0) {
-        return false;
-    } else {
-        return true;
-    }
+    $ret = INSTALLER_install($INSTALL_plugin[$_QRC_CONF['pi_name']]);
+    return $ret == 0 ? true : false;
 }
 
 
@@ -89,12 +88,10 @@ function plugin_install_qrcode()
 */
 function plugin_load_configuration_qrcode()
 {
-    global $_CONF, $_QRC_CONF;
-
-    $base_path = $_CONF['path'] . 'plugins/' . $_QRC_CONF['pi_name'] . '/';
+    global $_CONF;
 
     require_once $_CONF['path_system'] . 'classes/config.class.php';
-    require_once $base_path . 'install_defaults.php';
+    require_once dirname(__FILE__) . '/install_defaults.php';
 
     return plugin_initconfig_qrcode();
 }

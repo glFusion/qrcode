@@ -2,7 +2,7 @@
 The qrcode plugin for glFusion creates QR Code images for display in blocks,
 articles, pages, or by other plugins.
 
-##Autotag
+## Autotag
 Basic Syntax: [qrcode:*data_string*]
 
 Options:
@@ -16,19 +16,23 @@ Options:
 
 The defaults for size, type and ECC are set in the plugin configuration.
 
-##Service Function
+## Service Function
 Plugins may request a QRCode image by calling LGLIB_invokeService which will
 call the QRCode plugin's service function, if available.
 
 Usage: $status = LGLIB_invokeService('qrcode', array('data'=>'data to encode'), $output, $svc_msg);
 
-The second argument must be an array with an element named "data" containing the data to encode.
-Spaces are allowed in this case.
+The second argument must be an array with an element named "data" containing the data to encode. Spaces are allowed in this case.
+
+Additional array elements can be provided to override default values:
+* module_size: Set the image size
+* image_type = "png" or "jpg"
+* ecc_level = ECC Level
 
 The resulting $output variable is populated with:
 ```
 array(
-  'img'  => Image filename,
+  'img'  => Image filename only,
   'path' => Full filesystem path to the image,
   'html' => Full "img src" tag, including default sizing and styling,
   'url'  => Image URL only to be styled and rendered by the caller,
