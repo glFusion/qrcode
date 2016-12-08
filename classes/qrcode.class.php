@@ -8,7 +8,7 @@
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
 *   @version    1.0.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
 */
@@ -128,7 +128,7 @@ class qrCode
         } else {
             $params['image_type'] = 'png';
         }
-    
+
         $md5 = md5($params['data']);
         $ext = ($params['image_type'] == 'jpeg') ? '.jpg' : '.png';
 
@@ -207,7 +207,7 @@ class qrCode
             break;
         case 'png':
             return 'image/png';
-            break;  
+            break;
         }
     }
 

@@ -9,7 +9,7 @@
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
 *   @version    1.0.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
 */
@@ -80,7 +80,7 @@ function plugin_autouninstall_qrcode()
 
 
 /**
-*   Upgrade the QRCode plugin. 
+*   Upgrade the QRCode plugin.
 */
 function plugin_upgrade_qrcode()
 {
@@ -306,7 +306,7 @@ function QRC_qrcode(&$params)
     }else {
         $params['image_type'] = 'png';
     }
-    
+
     $ext = ($params['image_type'] == 'jpeg') ? '.jpg' : '.png';
 
     if (empty($params['module_size'])) {
@@ -376,7 +376,7 @@ function QRC_html($filename)
     global $_QRC_CONF;
 
     $size = $_QRC_CONF['module_size'] * 50;
-    $html = '<img alt="QR code" width="' . $size . 
+    $html = '<img alt="QR code" width="' . $size .
             '" height="' . $size . '" src="' . QRC_url($filename) . '" />';
     return $html;
 }
@@ -408,7 +408,7 @@ function QRC_cleanCache()
         return false;
     }
     $lastCleanFile = $_QRC_CONF['img_path'] . 'qrc_cacheLastCleanTime.touch';
-        
+
     //If this is a new timthumb installation we need to create the file
     if (!is_file($lastCleanFile)) {
         if (!touch($lastCleanFile)) {

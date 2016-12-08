@@ -9,7 +9,7 @@
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
 *   @version    1.0.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
 */
@@ -19,8 +19,8 @@ require_once $_CONF['path'].'plugins/qrcode/qrcode.php';
 global $INSTALL_plugin;
 $INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
     'installer' => array(
-        'type' => 'installer', 
-        'version' => '1', 
+        'type' => 'installer',
+        'version' => '1',
         'mode' => 'install',
     ),
 
@@ -30,26 +30,26 @@ $INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
        'display'   => $_QRC_CONF['pi_display_name'],
        'ver'       => $_QRC_CONF['pi_version'],
        'gl_ver'    => $_QRC_CONF['gl_version'],
-       'url'       => $_QRC_CONF['pi_url'], 
+       'url'       => $_QRC_CONF['pi_url'],
    ),
 
-   array('type' => 'group', 
-       'group' => $_QRC_CONF['pi_name'] .' Admin', 
+   array('type' => 'group',
+       'group' => $_QRC_CONF['pi_name'] .' Admin',
        'desc' => 'Users in this group can administer the ' .
                     $_QRC_CONF['pi_display_name'] . ' plugin',
-       'variable' => 'admin_group_id', 
+       'variable' => 'admin_group_id',
        'admin' => true,
        'addroot' => true,
     ),
 
-    array('type' => 'feature', 
-        'feature' => $_QRC_CONF['pi_name'] . '.admin', 
+    array('type' => 'feature',
+        'feature' => $_QRC_CONF['pi_name'] . '.admin',
         'desc' => 'Can administer the ' . $_QRC_CONF['pi_display_name'] . ' plugin',
         'variable' => 'admin_feature_id',
     ),
 
-    array('type' => 'mapping', 
-        'group' => 'admin_group_id', 
+    array('type' => 'mapping',
+        'group' => 'admin_group_id',
         'feature' => 'admin_feature_id',
         'log' => 'Adding admin feature to the admin group',
     ),
@@ -58,7 +58,6 @@ $INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
         'type'  => 'mkdir',
         'dirs' => array($_CONF['path'] . 'data/' . $_QRC_CONF['pi_name']),
     ),
-
 );
 
 
