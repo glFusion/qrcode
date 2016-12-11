@@ -469,6 +469,8 @@ function phpblock_qrcode()
 */
 function service_getcode_qrcode($args, &$output, &$svc_msg)
 {
+    global $_QRC_CONF;
+
     if (!is_array($args)) return PLG_RET_ERROR;
     if (!isset($args['data'])) return PLG_RET_ERROR;
     $output = array();
@@ -476,6 +478,7 @@ function service_getcode_qrcode($args, &$output, &$svc_msg)
     $output['path'] = QRC_path($output['img']);
     $output['html'] = QRC_html($output['img']);
     $output['url']  = QRC_url($output['img']);
+    $output['type'] = $_QRC_CONF['image_type'];
     return PLG_RET_OK;
 }
 

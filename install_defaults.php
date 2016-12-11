@@ -34,6 +34,8 @@ $_QRC_CONF_DEFAULT = array(
     'module_size'   => 2,
     'ecc_level'     => 'M',
     'image_type'    => 'png',
+    'cache_max_age' => 90,          // days
+    'cache_clean_interval' => 120,  // minutes
 );
 
 
@@ -67,6 +69,10 @@ function plugin_initconfig_qrcode()
         0, 0, 31, 20, true, $pi);
     $c->add('image_type', $_QRC_CONF_DEFAULT['image_type'], 'select',
         0, 0, 30, 30, true, $pi);
+    $c->add('cache_max_age', $_QRC_CONF_DEFAULT['cache_max_age'], 'text',
+        0, 0, 0, 40, true, $pi);
+    $c->add('cache_clean_interval', $_QRC_CONF_DEFAULT['cache_clean_interval'], 'text',
+        0, 0, 0, 50, true, $pi);
 
     return true;
 }

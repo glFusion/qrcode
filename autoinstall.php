@@ -8,7 +8,7 @@
 *   @copyright  Copyright (c) 2010-2016 Lee Garner <lee@leegarner.com>
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
-*   @version    1.0.0
+*   @version    1.0.1
 *   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
@@ -56,7 +56,7 @@ $INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
 
     array(
         'type'  => 'mkdir',
-        'dirs' => array($_CONF['path'] . 'data/' . $_QRC_CONF['pi_name']),
+        'dirs' => array($_QRC_CONF['img_path']),
     ),
 );
 

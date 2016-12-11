@@ -47,6 +47,8 @@ $LANG_confignames['qrcode'] = array(
     'module_size'        => 'モジュールサイズ',
     'ecc_level'          => 'エラー補正レベル',
     'image_type'         => '画像のタイプ',
+    'cache_max_age'     => 'Cache Max Age',
+    'cache_clean_interval' => 'Cache Clean Interval',
 );
 
 $LANG_configsubgroups['qrcode'] = array(

@@ -5,7 +5,7 @@
 *   @author     Lee Garner <lee@leegarner.com>
 *   @copyright  Copyright (c) 2016 Lee Garner <lee@leegarner.com>
 *   @package    qrcode
-*   @version    1.0.0
+*   @version    1.0.1
 *   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
@@ -18,22 +18,44 @@ function QRC_upgrade()
 {
     global $_TABLES, $_QRC_CONF, $_PLUGIN_INFO;
 
-    $pi_name = $_QRC_CONF['pi_name'];
-    $installed_version = $_PLUGIN_INFO[$pi_name];
+    $installed_version = $_PLUGIN_INFO[$_QRC_CONF['pi_name']];
     $code_version = plugin_chkVersion_qrcode();
     if ($installed_version == $code_version) return true;
+    $c = config::get_instance();
 
-    // update the version numbers
+    if (!COM_checkVersion($installed_version, '1.0.1')) {
+        $c->add('cache_max_age', $_QRC_CONF_DEFAULT['cache_max_age'], 'text',
+            0, 0, 0, 40, true, $pi);
+        $c->add('cache_clean_interval', $_QRC_CONF_DEFAULT['cache_clean_interval'], 'text',
+            0, 0, 0, 50, true, $pi);
+        $installed_version = '1.0.1';
+        if (!QRC_set_version($installed_version)) return false;
+    }
+
+    return true;
+}
+
+
+/**
+*   Update the plugin version number in the database
+*
+*   @param  string  $ver    New version
+*   @return boolean         True on success, False on failure
+*/
+function QRC_set_version($ver)
+{
+    global $_QRC_CONF, $_TABLES;
+
     $sql = "UPDATE {$_TABLES['plugins']} SET
-                pi_version = '$code_version',
+                pi_version = '$ver',
                 pi_gl_version = '{$_QRC_CONF['gl_version']}'
-            WHERE pi_name = '$pi_name'");
+            WHERE pi_name = '{$_QRC_CONF['pi_name']}'";
     DB_query($sql, 1);
     if (DB_error()) {
-        COM_errorLog("Error updating $pi_name to version $code_version");
+        COM_errorLog("Error updating {$_QRC_CONF['pi_display_name']} to version $ver");
         return false;
     } else {
-        COM_errorLog("$pi_name plugin was successfully updated to version $code_version.");
+        COM_errorLog("{$_QRC_CONF['pi_display_name']} plugin was successfully updated to version $ver.");
         return true;
     }
 }
