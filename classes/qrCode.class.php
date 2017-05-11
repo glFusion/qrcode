@@ -251,16 +251,20 @@ class qrCode
     *   Creates the image if not already done.
     *
     *   @uses   qrCode::getURL()
+    *   @param  array   $classes    Optional array of additional CSS classes
     *   @return string  HTML to display
     */
-    public function getHTML()
+    public function getHTML($classes=array())
     {
         global $_QRC_CONF;
 
         if ($this->have_image || $this->createQRImage()) {
+            if (is_array($classes) && !empty($classes)) {
+                $cls = implode(' ', $classes);
+            }
             $size = ($this->module_size * 25) +
                 ($this->version * ($this->module_size * 4));
-            $html = '<div class="qrcode">' . LB
+            $html = '<div class="qrcode ' . $cls . '">' . LB
               . '<img alt="QR code" width="' . $size . '" height="' . $size
               . '" src="' . $this->getURL() . '"' . '/>' . LB
               . '</div>' . LB;

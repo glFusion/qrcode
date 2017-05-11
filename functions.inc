@@ -456,8 +456,45 @@ function phpblock_qrcode()
     );
     USES_qrcode_class_qrcode();
     $Q = new qrCode($params);
-    return $Q->getHTML();
+    return $Q->getHTML(array('phpblock'));
     //return QRC_html(QRC_qrcode($params));
+}
+
+
+/**
+*   Get additional CSS into the site header
+*
+*   @return array   List of paths to CSS files
+*/
+function plugin_getheadercss_qrcode()
+{
+    global $_CONF, $_QRC_CONF;
+
+    $styles = array();
+    $files = array(
+        'style.css',
+    );
+
+    // When looking for CSS files, we'll check in this order:
+    //  1. layout/custom
+    //  2. layout
+    //  3. plugin/custom
+    //  4. plugin (default distribution version)
+    $pi_css = QRC_PI_PATH . '/css/';
+    $layout_css = "{$_CONF['path_layout']}plugins/{$_QRC_CONF['pi_name']}/";
+
+    foreach ($files as $file) {
+        if (@file_exists($layout_css . 'custom/' . $file)) {
+            $styles[] = $layout_css . 'custom/' . $file;
+        } elseif (@file_exists($layout_css . $file)) {
+            $styles[] = $layout_css . $file;
+        } elseif (@file_exists($pi_css . 'custom/' . $file)) {
+            $styles[] = $pi_css . 'custom/' . $file;
+        } else {
+            $styles[] = $pi_css . $file;
+        }
+    }
+    return $styles;
 }
 
 
