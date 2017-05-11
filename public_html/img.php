@@ -35,7 +35,7 @@ header('Expires: 0');
 header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 header('Cache-Control: public');
 header('Content-Description: File Transfer');
-header('Content-Type: ' . qrCode::MimeType());
+header('Content-Type: ' . qrCode::MimeType($img));
 header('Content-Disposition: attachment; filename="' . $img . '"');
 header('Content-Transfer-Encoding: binary');
 header('Content-Length: ' . $fsize);

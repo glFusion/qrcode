@@ -27,7 +27,11 @@ The second argument must be an array with an element named "data" containing the
 Additional array elements can be provided to override default values:
 * module_size: Set the image size
 * image_type = "png" or "jpg"
-* ecc_level = ECC Level
+* ecc_level = Error Correction Level:
+  * Level L – up to 7% damage
+  * Level M – up to 15% damage
+  * Level Q – up to 25% damage
+  * Level H – up to 30% damage
 
 The resulting $output variable is populated with:
 ```
@@ -41,3 +45,5 @@ array(
 Based on the Geeklog plugin of the same name by Yoshinori Tahara
 * copyright  Copyright (c) 2010-2016 Lee Garner <lee@leegarner.com>
 * copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
+
+"QR Code" is a registred trademark of DENSO WAVE INCORPORATED (www.qrcode.com).

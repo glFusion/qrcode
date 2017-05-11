@@ -8,7 +8,7 @@
 *   @copyright  Copyright (c) 2010-2016 Lee Garner <lee@leegarner.com>
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
-*   @version    1.0.0
+*   @version    1.0.2
 *   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
@@ -49,7 +49,7 @@ if (file_exists($langfile)) {
 }
 
 function USES_qrcode_class_qrcode()
-{   include_once QRC_CLASSPATH . '/qrcode.class.php';   }
+{   include_once QRC_CLASSPATH . '/qrCode.class.php';   }
 
 
 /**
@@ -146,11 +146,12 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
 
         $block = '';
         if (!empty($params['data'])) {
-            $block = QRC_html(QRC_qrcode($params));
+            USES_qrcode_class_qrcode();
+            $Q = new qrCode($params);
+            $block = $Q->getHTML($params);
+            //$block = QRC_html(QRC_qrcode($params));
         }
-
         $content = str_replace($autotag['tagstr'], $block, $content);
-
         return $content;
     }
 }
@@ -182,7 +183,7 @@ function plugin_getconfigelementhelp_qrcode($option, $doclang='english')
 }
 
 
-function QRC_getVersion($version, $ecc_level, $data) {
+function X_QRC_getVersion($version, $ecc_level, $data) {
 
     if (empty($version)) $version = 1;
     $counter = 0;
@@ -271,7 +272,6 @@ function QRC_getVersion($version, $ecc_level, $data) {
         $i++;
         $version++;
     }
-
     return $version;
 }
 
@@ -289,7 +289,7 @@ function QRC_getVersion($version, $ecc_level, $data) {
 *   @param  array   $params     Parameters. 'data' element is required.
 *   @return string      Filename of code image. Call QRC_path() or QRC_html() to get paths.
 */
-function QRC_qrcode(&$params)
+function X_QRC_qrcode(&$params)
 {
     global $_CONF, $_QRC_CONF;
 
@@ -355,8 +355,9 @@ function QRC_qrcode(&$params)
 *
 *   @param  string  $filename   Image filename
 *   @return string      URL to render the image
+*   @deprecated
 */
-function QRC_url($filename)
+function X_QRC_url($filename)
 {
     return QRC_URL . '/img.php?img=' . $filename;
 }
@@ -367,11 +368,12 @@ function QRC_url($filename)
 *   Makes some assumptions about the image size, use
 *   QRC_url() by itself to get just the image URL.
 *
+*   @deprecated
 *   @uses   QRC_url()
 *   @param  string  $filename   Image filename
 *   @return string      Complete image tag for the URL
 */
-function QRC_html($filename)
+function X_QRC_html($filename)
 {
     global $_QRC_CONF;
 
@@ -385,10 +387,11 @@ function QRC_html($filename)
 /**
 *   Get the actual path to a QRCode image file
 *
+*   @deprecated
 *   @param  string  $filename   Image filename
 *   @return string          Full path to the image file
 */
-function QRC_path($filename)
+function X_QRC_path($filename)
 {
     global $_QRC_CONF;
 
@@ -398,8 +401,9 @@ function QRC_path($filename)
 
 /**
 *   Clean out old QR code images.
+*   @deprecated
 */
-function QRC_cleanCache()
+function X_QRC_cleanCache()
 {
     global $_QRC_CONF;
 
@@ -450,7 +454,10 @@ function phpblock_qrcode()
         'data' => COM_buildURL(COM_getCurrentURL()),
         'module_size' => '3',
     );
-    return QRC_html(QRC_qrcode($params));
+    USES_qrcode_class_qrcode();
+    $Q = new qrCode($params);
+    return $Q->getHTML();
+    //return QRC_html(QRC_qrcode($params));
 }
 
 
@@ -474,10 +481,21 @@ function service_getcode_qrcode($args, &$output, &$svc_msg)
     if (!is_array($args)) return PLG_RET_ERROR;
     if (!isset($args['data'])) return PLG_RET_ERROR;
     $output = array();
+    USES_qrcode_class_qrcode();
+    $Q = new qrCode($args);
+    $output['img'] = $Q->getImage();
+    if (!$output['img']) return PLG_RET_ERROR;
+
+    /*
     $output['img']  = QRC_qrcode($args);
     $output['path'] = QRC_path($output['img']);
     $output['html'] = QRC_html($output['img']);
     $output['url']  = QRC_url($output['img']);
+    */
+
+    $output['path'] = $Q->getPath();
+    $output['html'] = $Q->getHTML();
+    $output['url']  = $Q->getURL();
     $output['type'] = $_QRC_CONF['image_type'];
     return PLG_RET_OK;
 }
