@@ -105,7 +105,11 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
     if ($op == 'tagname') {
         return 'qrcode';
     } else if ($op == 'parse') {
-        $params = array();
+        $params = array(
+            'module_size' => 3,
+            'ecc_level' => 'M',
+            'image_type' => 'png',
+        );
         switch ($autotag['parm1']) {
             case 'home':
             case 'top':
@@ -135,7 +139,7 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
                         break;
                     case 'e':
                     case 'ecc':
-                        $params['ecc_level'] = $val;
+                        $params['ecc_level'] = strtoupper($val);
                         break;
                     default:
                         // nothing to do
