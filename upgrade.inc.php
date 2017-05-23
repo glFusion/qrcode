@@ -18,7 +18,17 @@ function QRC_upgrade()
 {
     global $_TABLES, $_QRC_CONF, $_PLUGIN_INFO;
 
-    $installed_version = $_PLUGIN_INFO[$_QRC_CONF['pi_name']];
+    if (isset($_PLUGIN_INFO[$_QRC_CONF['pi_name']])) {
+        if (is_array($_PLUGIN_INFO[$_QRC_CONF['pi_name']])) {
+            // glFusion >= 1.6.6
+            $installed_ver = $_PLUGIN_INFO[$_QRC_CONF['pi_name']]['pi_version'];
+        } else {
+            // legacy
+            $installed_ver = $_PLUGIN_INFO[$_QRC_CONF['pi_name']];
+        }
+    } else {
+        return false;
+    }
     $code_version = plugin_chkVersion_qrcode();
     if ($installed_version == $code_version) return true;
     $c = config::get_instance();
@@ -32,6 +42,8 @@ function QRC_upgrade()
         if (!QRC_set_version($installed_version)) return false;
     }
 
+    // Final version in case there was no actual upgrade done
+    if (!QRC_set_version($code_version)) return false;
     return true;
 }
 
