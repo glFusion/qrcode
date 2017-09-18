@@ -16,7 +16,7 @@
 *               GNU Public License v2 or later
 *   @filesource
 */
-
+namespace qrCode;
 
 /**
 *   Class to handle qrcodes

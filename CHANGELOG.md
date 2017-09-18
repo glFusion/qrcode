@@ -1,6 +1,7 @@
 # Changelog: QRCode plugin for glFusion
 
-## 1.0.2 - TBD
+## 1.0.2 - 2017-09-18
+* Implement qrCode namespace and class autoloader
 * Refactor image generation into qrCode class
 
 ## 1.0.1 - 2016-12-13
