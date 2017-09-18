@@ -115,6 +115,7 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
             'ecc_level' => 'M',
             'image_type' => 'png',
         );
+
         switch ($autotag['parm1']) {
             case 'home':
             case 'top':
@@ -123,34 +124,61 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
             case 'current':
                 $params['data'] = COM_buildURL(COM_getCurrentURL());
                 break;
+            case 'text':
             default:
-                $params['data'] = COM_applyFilter($autotag['parm1']);
+                $params['data'] = '';
+                    //COM_applyFilter($autotag['parm1']);
                 break;
         }
 
         // These parameters have default values in QRC_qrcode if not defined
         if (!empty($autotag['parm2'])) {
-            $parm2 = explode(' ', COM_applyFilter($autotag['parm2']));
+            $parm2 = htmlentities($autotag['parm2'], NULL, 'utf-8');
+            $parm2 = str_replace(array('&nbsp;', '&amp;nbsp;'), ' ', $parm2);
+            $parm2 = explode(' ', $parm2);
+            $skip = 0;
             foreach ($parm2 as $p) {
                 list($var,$val) = explode('=', $p);
                 switch ($var) {
-                    case 's':
-                    case 'size':
-                        $params['module_size'] = $val;
-                        break;
-                    case 't':
-                    case 'type':
-                        $params['image_type'] = $val;
-                        break;
-                    case 'e':
-                    case 'ecc':
-                        $params['ecc_level'] = strtoupper($val);
-                        break;
-                    default:
-                        // nothing to do
-                        break;
+                case 's':
+                case 'size':
+                    $params['module_size'] = $val;
+                    $skip++;
+                    break;
+                case 't':
+                case 'type':
+                    $params['image_type'] = $val;
+                    $skip++;
+                    break;
+                case 'e':
+                case 'ecc':
+                    $params['ecc_level'] = strtoupper($val);
+                    $skip++;
+                    break;
+                default:
+                    // nothing to do
+                    break;
                 }
             }
+
+            // Any leftover parts become the caption.  Borrowed from
+            // Mediagallery's caption handling.
+            if ($skip > 0) {
+                if (count($parm2) > $skip) {
+                    for ($i = 0; $i < $skip; $i++) {
+                        // Skip to the end of the processed directives
+                        array_shift($parm2);
+                    }
+                    $caption = trim(implode(' ', $parm2));
+                } else {
+                    $caption = '';
+                }
+            } else {
+                // There weren't any control parameters, so all of parm2 is
+                // the caption.
+                $caption = trim($autotag['parm2']);
+            }
+            $params['data'] = $caption;
         }
 
         $block = '';
