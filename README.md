@@ -16,6 +16,14 @@ Options:
 
 The defaults for size, type and ECC are set in the plugin configuration.
 
+### Examples
+```
+[qrcode:text s=5 http://www.myothersite.com]
+[qrcode:home]
+[qrcode:current]
+[qrcode:current size=5 t=jpg e=L]
+```
+
 ## Service Function
 Plugins may request a QRCode image by calling LGLIB_invokeService which will
 call the QRCode plugin's service function, if available.
