@@ -3,9 +3,9 @@
 *   Allow the downloading of original images to authorized visitors
 *  
 *   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2012 Lee Garner <lee@leegarner.com>
-*   @package    photocomp
-*   @version    0.0.1
+*   @copyright  Copyright (c) 2012-2017 Lee Garner <lee@leegarner.com>
+*   @package    qrCode
+*   @version    1.0.2
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 */
@@ -14,13 +14,12 @@
 *   Include require glFusion common functions
 */
 require_once '../lib-common.php';
-USES_qrcode_class_qrcode();
 
 $img = isset($_GET['img']) ? $_GET['img'] : '';
 if ($img == '') die('');
 
 // Make sure the image exists
-if (!qrCode::file_exists($img)) {
+if (!qrCode\qrCode::file_exists($img)) {
     die('');
 }
 
@@ -35,7 +34,7 @@ header('Expires: 0');
 header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 header('Cache-Control: public');
 header('Content-Description: File Transfer');
-header('Content-Type: ' . qrCode::MimeType($img));
+header('Content-Type: ' . qrCode\qrCode::MimeType($img));
 header('Content-Disposition: attachment; filename="' . $img . '"');
 header('Content-Transfer-Encoding: binary');
 header('Content-Length: ' . $fsize);
