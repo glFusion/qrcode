@@ -9,7 +9,7 @@ Options:
 * *data_string* - The data to be encoded. You can also specify:
   * *home* or *top* for the home page URL
   * *current* for the current page URL
-  * any other string for data. Currently spaces are not supported.
+  * *text* for any other string. The data string must follow any other parmeters
 * *s* or *size*:value to override the image size
 * *t* or *type*:value to override the image type. Default is PNG
 * *e* or *ecc*:value to override the ECC value
