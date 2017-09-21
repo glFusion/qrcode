@@ -1,6 +1,6 @@
 # Changelog: QRCode plugin for glFusion
 
-## 1.0.2 - 2017-09-18
+## 1.0.2 - 2017-09-21
 * Allow spaces in autotag data
 * Implement qrCode namespace and class autoloader
 * Refactor image generation into qrCode class
