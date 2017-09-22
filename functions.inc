@@ -5,10 +5,10 @@
 *
 *   @author     Lee Garner <lee@leegarner.com>
 *   @author     Yoshinori Tahara <taharaxp@gmail.com>
-*   @copyright  Copyright (c) 2010-2016 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2010-2017 Lee Garner <lee@leegarner.com>
 *   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
 *   @package    qrcode
-*   @version    1.0.2
+*   @version    1.0.3
 *   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
@@ -105,15 +105,15 @@ function plugin_upgrade_qrcode()
 */
 function plugin_autotags_qrcode($op, $content = '', $autotag = '')
 {
-    global $_CONF;
+    global $_CONF, $_QRC_CONF;
 
     if ($op == 'tagname') {
         return 'qrcode';
     } else if ($op == 'parse') {
         $params = array(
-            'module_size' => 3,
-            'ecc_level' => 'M',
-            'image_type' => 'png',
+            'module_size' => $_QRC_CONF['module_size'],
+            'ecc_level' => $_QRC_CONF['ecc_level'],
+            'image_type' => $_QRC_CONF['image_type'],
         );
 
         switch ($autotag['parm1']) {
@@ -127,7 +127,6 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
             case 'text':
             default:
                 $params['data'] = '';
-                    //COM_applyFilter($autotag['parm1']);
                 break;
         }
 
@@ -161,24 +160,26 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
                 }
             }
 
-            // Any leftover parts become the caption.  Borrowed from
-            // Mediagallery's caption handling.
-            if ($skip > 0) {
-                if (count($parm2) > $skip) {
-                    for ($i = 0; $i < $skip; $i++) {
-                        // Skip to the end of the processed directives
-                        array_shift($parm2);
+            // Any leftover parts become the caption, if not one of the standard ones.
+            // Borrowed from Mediagallery's caption handling.
+            if (empty($params['data'])) {
+                if ($skip > 0) {
+                    if (count($parm2) > $skip) {
+                        for ($i = 0; $i < $skip; $i++) {
+                            // Skip to the end of the processed directives
+                            array_shift($parm2);
+                        }
+                        $caption = trim(implode(' ', $parm2));
+                    } else {
+                        $caption = '';
                     }
-                    $caption = trim(implode(' ', $parm2));
                 } else {
-                    $caption = '';
+                    // There weren't any control parameters, so all of parm2 is
+                    // the caption.
+                    $caption = trim($autotag['parm2']);
                 }
-            } else {
-                // There weren't any control parameters, so all of parm2 is
-                // the caption.
-                $caption = trim($autotag['parm2']);
+                $params['data'] = $caption;
             }
-            $params['data'] = $caption;
         }
 
         $block = '';

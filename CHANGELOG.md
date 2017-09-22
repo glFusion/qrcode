@@ -1,5 +1,8 @@
 # Changelog: QRCode plugin for glFusion
 
+## 1.0.3 - 2017-09-22
+* Fix empty data string if current or home is specified in the autotag.
+
 ## 1.0.2 - 2017-09-21
 * Allow spaces in autotag data
 * Implement qrCode namespace and class autoloader
