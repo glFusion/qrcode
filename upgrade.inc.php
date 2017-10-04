@@ -43,7 +43,9 @@ function QRC_upgrade()
     }
 
     // Final version in case there was no actual upgrade done
-    if (!QRC_set_version($code_version)) return false;
+    if (!COM_checkVersion($installed_version, $code_version)) {
+        if (!QRC_set_version($code_version)) return false;
+    }
     return true;
 }
 
