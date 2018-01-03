@@ -1,5 +1,8 @@
 # Changelog: QRCode plugin for glFusion
 
+## 1.0.4 - 2018-01-03
+* Add missing data files
+
 ## 1.0.3 - 2017-09-22
 * Fix empty data string if current or home is specified in the autotag.
 
