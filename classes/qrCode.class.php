@@ -261,6 +261,8 @@ class qrCode
         if ($this->have_image || $this->createQRImage()) {
             if (is_array($classes) && !empty($classes)) {
                 $cls = implode(' ', $classes);
+            } else {
+                $cls = '';
             }
             $size = ($this->module_size * 25) +
                 ($this->version * ($this->module_size * 4));
@@ -378,7 +380,6 @@ class qrCode
             return false;
         }
 
-        //$base_dir   = dirname(__FILE__) . ;
         $path       = QRC_PI_PATH . '/include/data';   // path to data files.
         $image_path = QRC_PI_PATH . '/include/images'; // path to QRcode frame images.
         $version_ul = 40;                    // upper limit for version

@@ -1,5 +1,8 @@
 # Changelog: QRCode plugin for glFusion
 
+## 1.0.5 - TBD
+* E_ALL fixes
+
 ## 1.0.4 - 2018-01-03
 * Add missing data files
 

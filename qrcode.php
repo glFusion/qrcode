@@ -3,7 +3,7 @@
 *   Static configuration items for the QRcode plugin.
 *
 *   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2009-2017 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2009-2018 Lee Garner <lee@leegarner.com>
 *   @package    qrcode
 *   @version    1.0.4
 *   @license    http://opensource.org/licenses/gpl-2.0.php
@@ -11,7 +11,7 @@
 *   @filesource
 */
 
-$_QRC_CONF['pi_version']        = '1.0.4';
+$_QRC_CONF['pi_version']        = '1.0.5';
 $_QRC_CONF['pi_name']           = 'qrcode';
 $_QRC_CONF['pi_display_name']   = 'QRcode';
 $_QRC_CONF['gl_version']        = '1.6.0';
