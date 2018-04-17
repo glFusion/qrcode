@@ -4,7 +4,7 @@
 // +---------------------------------------------------------------------------+
 // | Qrcode Plugin for Geeklog                                                 |
 // +---------------------------------------------------------------------------+
-// | plugins/qrcode/language/english.php                                       |
+// | plugins/qrcode/language/english_utf-8.php                                 |
 // +---------------------------------------------------------------------------+
 // | Copyright (C) 2010 by the following authors:                              |
 // |                                                                           |
@@ -35,8 +35,9 @@ $LANG_QRC = array(
 
 // Messages for the plugin upgrade
 $PLG_qrcode_MESSAGE3001 = 'Plugin upgrade not supported.';
-$PLG_qrcode_MESSAGE3002 = $LANG32[9];
-
+if (isset($LANG32)) {
+    $PLG_qrcode_MESSAGE3002 = $LANG32[9];
+}
 // Localization of the Admin Configuration UI
 $LANG_configsections['qrcode'] = array(
     'label' => 'QRcode',
