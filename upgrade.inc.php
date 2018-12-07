@@ -33,7 +33,6 @@ function QRC_upgrade()
     }
     $code_version = plugin_chkVersion_qrcode();
     if ($installed_version == $code_version) return true;
-    $c = config::get_instance();
 
     if (!COM_checkVersion($installed_version, '1.0.1')) {
         $installed_version = '1.0.1';
@@ -42,9 +41,9 @@ function QRC_upgrade()
 
     // Update any config changes
     USES_lib_install();
-    global $classifiedsConfigData;
+    global $qrcodeConfigData;
     require_once __DIR__ . '/install_defaults.php';
-    _update_config('ckassufueds', $classifiedsConfigData);
+    _update_config('ckassufueds', $qrcodeConfigData);
 
     // Final version in case there was no actual upgrade done
     if (!COM_checkVersion($installed_version, $code_version)) {
