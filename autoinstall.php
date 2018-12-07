@@ -1,18 +1,18 @@
 <?php
 /**
-*   Automatic plugin installation for the QR Code plugin
-*   Based on the Geeklog plugin by Yoshinori Tahara
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @author     Yoshinori Tahara <taharaxp@gmail.com>
-*   @copyright  Copyright (c) 2010-2016 Lee Garner <lee@leegarner.com>
-*   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
-*   @package    qrcode
-*   @version    1.0.1
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Automatic plugin installation for the QR Code plugin.
+ * Based on the Geeklog plugin by Yoshinori Tahara
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @author      Yoshinori Tahara <taharaxp@gmail.com>
+ * @copyright   Copyright (c) 2010-2016 Lee Garner <lee@leegarner.com>
+ * @copyright   2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
+ * @package     qrcode
+ * @version     v1.0.1
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 require_once $_CONF['path'].'plugins/qrcode/qrcode.php';
 
@@ -62,11 +62,11 @@ $INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
 
 
 /**
-*   Plugin autoinstall function
-*
-*   @param    string  $pi_name    Plugin name
-*   @return   array               Plugin information
-*/
+ * Plugin autoinstall function.
+ *
+ * @param   string  $pi_name    Plugin name
+ * @return  array               Plugin information
+ */
 function plugin_install_qrcode()
 {
     global $_QRC_CONF, $_CONF, $INSTALL_plugin;
@@ -80,11 +80,11 @@ function plugin_install_qrcode()
 
 
 /**
-*   Load plugin configuration from database
-*
-*   @return   boolean             true on success, otherwise false
-*   @see      plugin_initconfig_qrcode
-*/
+ * Load plugin configuration from database.
+ *
+ * @return  boolean             true on success, otherwise false
+ * @see     plugin_initconfig_qrcode
+ */
 function plugin_load_configuration_qrcode()
 {
     global $_CONF;
@@ -97,16 +97,15 @@ function plugin_load_configuration_qrcode()
 
 
 /**
-*   Automatic uninstall function for plugins
-*
-*   @return   array
-*
-*   This code is automatically uninstalling the plugin.
-*   It passes an array to the core code function that removes
-*   tables, groups, features and php blocks from the tables.
-*   Additionally, this code can perform special actions that cannot be
-*   foreseen by the core code (interactions with other plugins for example)
-*/
+ * Automatic uninstall function for plugins.
+ * This code is automatically uninstalling the plugin.
+ * It passes an array to the core code function that removes
+ * tables, groups, features and php blocks from the tables.
+ * Additionally, this code can perform special actions that cannot be
+ * foreseen by the core code (interactions with other plugins for example)
+ *
+ * @return  array
+ */
 function QRC_autouninstall()
 {
     return array (

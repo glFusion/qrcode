@@ -1,25 +1,23 @@
 <?php
 /**
-*   API functions for creating QR Codes.
-*   Based on the Geeklog plugin by Yoshinori Tahara
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @author     Yoshinori Tahara <taharaxp@gmail.com>
-*   @copyright  Copyright (c) 2010-2017 Lee Garner <lee@leegarner.com>
-*   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
-*   @package    qrcode
-*   @version    1.0.3
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * API functions for creating QR Codes.
+ * Based on the Geeklog plugin by Yoshinori Tahara
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @author      Yoshinori Tahara <taharaxp@gmail.com>
+ * @copyright   Copyright (c) 2010-2017 Lee Garner <lee@leegarner.com>
+ * @copyright   2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
+ * @package     qrcode
+ * @version     v1.0.3
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 // this file can't be used on its own
 if (!defined('GVERSION')) {
     die('This file can not be used on its own.');
 }
-
-$_QRC_CONF = array();
 
 /** Include the glFusion configuration class if not done already */
 require_once $_CONF['path_system'] . 'classes/config.class.php';
@@ -29,23 +27,21 @@ $_QRC_CONF = $qrc_config->get_config('qrcode');
 
 require_once __DIR__ . '/qrcode.php';
 
-define('QRC_PI_PATH', $_CONF['path'] . 'plugins/' . $_QRC_CONF['pi_name']);
+define('QRC_PI_PATH', __DIR__);
 define('QRC_URL', $_CONF['site_url'] . '/' . $_QRC_CONF['pi_name']);
 define('QRC_ADMIN_URL', $_CONF['site_admin_url'] . '/plugins/' . $_QRC_CONF['pi_name']);
-define('QRC_CLASSPATH', QRC_PI_PATH . '/classes');
 
 /** Include the user-supplied configuration file, if any */
-if (is_file(QRC_PI_PATH . '/config.php')) {
-    include_once QRC_PI_PATH . '/config.php';
+if (is_file(__DIR__ . '/config.php')) {
+    include_once __DIR__ . '/config.php';
 }
 
 /** Language file include */
-$plugin_path = $_CONF['path'] . 'plugins/qrcode/';
-$langfile = $plugin_path . 'language/' . $_CONF['language'] . '.php';
+$langfile = __DIR__ . '/language/' . $_CONF['language'] . '.php';
 if (file_exists($langfile)) {
     require_once $langfile;
 } else {
-    require_once $plugin_path . 'language/english.php';
+    require_once __DIR__ . '/language/english.php';
 }
 
 spl_autoload_register(function($class)
@@ -61,10 +57,10 @@ spl_autoload_register(function($class)
 
 
 /**
-*   Returns the current plugin code version
-*
-*   @return string  plugin version
-*/
+ * Returns the current plugin code version.
+ *
+ * @return  string  plugin version
+ */
 function plugin_chkVersion_qrcode()
 {
     global $_QRC_CONF;
@@ -73,10 +69,10 @@ function plugin_chkVersion_qrcode()
 
 
 /**
-* Automatic uninstall function for plugins
-*
-* @return   array
-*/
+ * Automatic uninstall function for plugins
+ *
+ * @return  array
+ */
 function plugin_autouninstall_qrcode()
 {
     require_once __DIR__ . '/autoinstall.php';
@@ -85,8 +81,10 @@ function plugin_autouninstall_qrcode()
 
 
 /**
-*   Upgrade the QRCode plugin.
-*/
+ * Upgrade the QRCode plugin.
+ *
+ * @return  boolean     True on success, False on failure
+ */
 function plugin_upgrade_qrcode()
 {
     require_once QRC_PI_PATH . '/upgrade.inc.php';
@@ -95,14 +93,14 @@ function plugin_upgrade_qrcode()
 
 
 /**
-*   Implements the [qrcode:] autotag.
-*
-*   @param    string  $op         operation to perform
-*   @param    string  $content    item (e.g. story text), including the autotag
-*   @param    array   $autotag    parameters used in the autotag
-*   @param    mixed               tag names (for $op='tagname') or formatted content
-*
-*/
+ * Implements the [qrcode:] autotag.
+ *
+ * @param   string  $op         operation to perform
+ * @param   string  $content    item (e.g. story text), including the autotag
+ * @param   array   $autotag    parameters used in the autotag
+ * @param   mixed               tag names (for $op='tagname') or formatted content
+ * @return  string      Autotag replacement HTML
+ */
 function plugin_autotags_qrcode($op, $content = '', $autotag = '')
 {
     global $_CONF, $_QRC_CONF;
@@ -194,12 +192,12 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
 
 
 /**
-*   Get the URL to the configuration help file.
-*
-*   @param  string  $option     Config option selected
-*   @param  string  $doclang    Document language
-*   @return string              URL to document
-*/
+ * Get the URL to the configuration help file.
+ *
+ * @param   string  $option     Config option selected
+ * @param   string  $doclang    Document language
+ * @return  string              URL to document
+ */
 function plugin_getconfigelementhelp_qrcode($option, $doclang='english')
 {
     global $_QRC_CONF;
@@ -220,10 +218,10 @@ function plugin_getconfigelementhelp_qrcode($option, $doclang='english')
 
 
 /**
-*   Show the site URL in a block as a QR Code
-*
-*   @return string  Image URL
-*/
+ * Show the site URL in a block as a QR Code.
+ *
+ * @return  string  Image URL
+ */
 function phpblock_qrcode()
 {
     $params = array(
@@ -236,10 +234,10 @@ function phpblock_qrcode()
 
 
 /**
-*   Get additional CSS into the site header
-*
-*   @return array   List of paths to CSS files
-*/
+ * Get additional CSS into the site header.
+ *
+ * @return  array   List of paths to CSS files
+ */
 function plugin_getheadercss_qrcode()
 {
     global $_CONF, $_QRC_CONF;
@@ -273,18 +271,18 @@ function plugin_getheadercss_qrcode()
 
 
 /**
-*   Service function to allow plugins to get a QR code
-*   $output is an array populated with useful string values for the image:
-*       - img  => Image filename
-*       - path => Filesystem path to the image
-*       - html => Full HTML "img src" tag using default sizes and styles
-*       - url  => URL only to the image to allow styling by the caller
-*
-*   @param  array   $args       Arguments, 'data' element is required.
-*   @param  mixed   &$output    Receives the QR code URL string
-*   @param  mixed   &$svc_msg   Not used
-*   @return integer     Status code (PLG_RET_OK, PLG_RET_ERROR).
-*/
+ * Service function to allow plugins to get a QR code.
+ * $output is an array populated with useful string values for the image:
+ * - img  => Image filename
+ * - path => Filesystem path to the image
+ * - html => Full HTML "img src" tag using default sizes and styles
+ * - url  => URL only to the image to allow styling by the caller
+ *
+ * @param  array   $args       Arguments, 'data' element is required.
+ * @param  mixed   $output    Receives the QR code URL string
+ * @param  mixed   $svc_msg   Not used
+ * @return integer     Status code (PLG_RET_OK, PLG_RET_ERROR).
+ */
 function service_getcode_qrcode($args, &$output, &$svc_msg)
 {
     global $_QRC_CONF;

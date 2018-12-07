@@ -1,39 +1,39 @@
 <?php
 /**
-*   Class to handle creating qrcodes.
-*   Adapted from the qrCode plugin for Geekog by Yoshinori Tahara,
-*   which uses code from Y.Swetake.
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @author     Yoshinori Tahara <taharaxp@gmail.com>
-*   @author     Y.Swetake
-*   @copyright  Copyright (c) 2010-2017 Lee Garner <lee@leegarner.com>
-*   @copyright  2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
-*   @copyright  version 0.50g (C)2000-2005,Y.Swetake
-*   @package    qrcode
-*   @version    1.0.2
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Class to handle creating qrcodes.
+ * Adapted from the qrCode plugin for Geekog by Yoshinori Tahara,
+ * which uses code from Y.Swetake.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @author      Yoshinori Tahara <taharaxp@gmail.com>
+ * @author      Y.Swetake
+ * @copyright   Copyright (c) 2010-2017 Lee Garner <lee@leegarner.com>
+ * @copyright   2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
+ * @copyright   version 0.50g (C)2000-2005,Y.Swetake
+ * @package     qrcode
+ * @version     v1.0.2
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 namespace qrCode;
 
 /**
-*   Class to handle qrcodes
-*   @package    qrcode
-*/
+ * Class to handle qrcodes.
+ * @package qrcode
+ */
 class qrCode
 {
     /**
-    *   Arrray of properties accessed via __set() and __get()
-    *   @var array
-    */
+     * Arrray of properties accessed via __set() and __get().
+     * @var array
+     */
     private $properties = array();
 
     /**
-    *   Max data bits array, used by a couple of functions
-    *   @var array
-    */
+     * Max data bits array, used by a couple of functions.
+     * @var array
+     */
     private $max_data_bits_array = array(
             0,128,224,352,512,688,864,992,1232,1456,1728,
             2032,2320,2672,2920,3320,3624,4056,4504,5016,5352,
@@ -57,21 +57,21 @@ class qrCode
         );
 
     /**
-    *   Indicate this image has been created.
-    *   Saves a call to file_exists if getURL, getPath, etc. are called in
-    *   the same session
-    *   @var boolean
-    */
+     * Indicate this image has been created.
+     * Saves a call to file_exists if getURL, getPath, etc. are called in
+     * the same session
+     * @var boolean
+     */
     private $have_image = false;
 
 
     /**
-    *   Constructor. Instantiate a qrCode object based on suppleid parameters.
-    *   The params array must contain at least a 'data' element with the
-    *   data to be encoded.
-    *
-    *   @param  array   $params     Array of parameters for qrCode creation
-    */
+     * Constructor. Instantiate a qrCode object based on suppleid parameters.
+     * The params array must contain at least a 'data' element with the
+     * data to be encoded.
+     *
+     * @param   array   $params     Array of parameters for qrCode creation
+     */
     public function __construct($params)
     {
         global $_QRC_CONF;
@@ -91,11 +91,11 @@ class qrCode
 
 
     /**
-    *   Magic function to set a value into the properties array.
-    *
-    *   @param  string  $key    Property name to set
-    *   @param  mixed   $value  Value to set
-    */
+     * Magic function to set a value into the properties array.
+     *
+     * @param   string  $key    Property name to set
+     * @param   mixed   $value  Value to set
+     */
     public function __set($key, $value)
     {
         switch ($key) {
@@ -141,12 +141,12 @@ class qrCode
 
 
     /**
-    *   Returns a value from the properties array.
-    *   Also gets custom values based on properties
-    *
-    *   @param  string  $key    Name of property to return
-    *   @return mixed       Value of property, NULL if not defined
-    */
+     * Returns a value from the properties array.
+     * Also gets custom values based on properties
+     *
+     * @param   string  $key    Name of property to return
+     * @return  mixed       Value of property, NULL if not defined
+     */
     public function __get($key)
     {
         switch ($key) {
@@ -166,10 +166,10 @@ class qrCode
 
 
     /**
-    *   Sets the qrCode version in an object var, and returns the value
-    *
-    *   @return integer     qrCode version
-    */
+     * Sets the qrCode version in an object var, and returns the value.
+     *
+     * @return  integer     qrCode version
+     */
     private function setVersion()
     {
         $data_bits = array();
@@ -231,11 +231,11 @@ class qrCode
 
 
     /**
-    *   Get the image filename.
-    *   Creates the image if not already done.
-    *
-    *   @return string  Image filename (not full path)
-    */
+     * Get the image filename.
+     * Creates the image if not already done.
+     *
+     * @return  string  Image filename (not full path)
+     */
     public function getImage()
     {
         if ($this->have_image || $this->createQRImage()) {
@@ -247,13 +247,13 @@ class qrCode
 
 
     /**
-    *   Get the HTML to display a qrCode image.
-    *   Creates the image if not already done.
-    *
-    *   @uses   qrCode::getURL()
-    *   @param  array   $classes    Optional array of additional CSS classes
-    *   @return string  HTML to display
-    */
+     * Get the HTML to display a qrCode image.
+     * Creates the image if not already done.
+     *
+     * @uses    qrCode::getURL()
+     * @param   array   $classes    Optional array of additional CSS classes
+     * @return  string  HTML to display
+     */
     public function getHTML($classes=array())
     {
         global $_QRC_CONF;
@@ -278,12 +278,12 @@ class qrCode
 
 
     /**
-    *   Get the full path to a QRCode image file
-    *   Creates the image if not already done.
-    *
-    *   @param  string  $filename   Image filename
-    *   @return string          Full path to the image file
-    */
+     * Get the full path to a QRCode image file.
+     * Creates the image if not already done.
+     *
+     * @param   string  $filename   Image filename
+     * @return  string          Full path to the image file
+     */
     public function getPath()
     {
         if ($this->have_image || $this->createQRImage()) {
@@ -295,14 +295,14 @@ class qrCode
 
 
     /**
-    *   Get the URL to a QRCode image. Creates the image if not already done.
-    *   This returns only the image URL, leaving it up to to the caller
-    *   to create the complete image tag.
-    *
-    *   @see    qrCode::getHTML()
-    *   @param  string  $filename   Image filename
-    *   @return string      URL to render the image
-    */
+     * Get the URL to a QRCode image. Creates the image if not already done.
+     * This returns only the image URL, leaving it up to to the caller
+     * to create the complete image tag.
+     *
+     * @see     qrCode::getHTML()
+     * @param   string  $filename   Image filename
+     * @return  string      URL to render the image
+     */
     function getURL()
     {
         if ($this->have_image || $this->createQRImage()) {
@@ -314,11 +314,11 @@ class qrCode
 
 
     /**
-    *   Determine if an image file exists
-    *
-    *   @param  string  $filename   Filename only of image
-    *   @return boolean     True if the file exists, False if not
-    */
+     * Determine if an image file exists.
+     *
+     * @param   string  $filename   Filename only of image
+     * @return  boolean     True if the file exists, False if not
+     */
     public static function file_exists($filename)
     {
         global $_QRC_CONF;
@@ -332,11 +332,11 @@ class qrCode
 
 
     /**
-    *   Get the mime-type value depending on the image type used
-    *
-    *   @param  string  $type   Type of image, JPG or PNG
-    *   @return string          Mime type corresponding to image type
-    */
+     * Get the mime-type value depending on the image type used.
+     *
+     * @param   string  $type   Type of image, JPG or PNG
+     * @return  string          Mime type corresponding to image type
+     */
     public static function MimeType()
     {
         global $_QRC_CONF;
@@ -354,11 +354,11 @@ class qrCode
 
 
     /**
-    *   Create the qrCode image and save it in the cach directory
-    *   Returns True if the file already exists
-    *
-    *   @return boolean     True on success, False on failure
-    */
+     * Create the qrCode image and save it in the cach directory.
+     * Returns True if the file already exists.
+     *
+     * @return  boolean     True on success, False on failure
+     */
     public function createQRImage()
     {
         // Already have this image and info in the current object

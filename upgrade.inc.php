@@ -1,19 +1,21 @@
 <?php
 /**
-*   Perform upgrade functions for QRCode
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2016 Lee Garner <lee@leegarner.com>
-*   @package    qrcode
-*   @version    1.0.1
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Perform upgrade functions for QRCode
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2016 Lee Garner <lee@leegarner.com>
+ * @package     qrcode
+ * @version     v1.0.1
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 /**
-*   Perform the upgrade of the QRCode plugin.
-*/
+ * Perform the upgrade of the QRCode plugin.
+ *
+ * @return  boolean     True on success, False on error
+ */
 function QRC_upgrade()
 {
     global $_TABLES, $_QRC_CONF, $_PLUGIN_INFO;
@@ -34,13 +36,15 @@ function QRC_upgrade()
     $c = config::get_instance();
 
     if (!COM_checkVersion($installed_version, '1.0.1')) {
-        $c->add('cache_max_age', $_QRC_CONF_DEFAULT['cache_max_age'], 'text',
-            0, 0, 0, 40, true, $pi);
-        $c->add('cache_clean_interval', $_QRC_CONF_DEFAULT['cache_clean_interval'], 'text',
-            0, 0, 0, 50, true, $pi);
         $installed_version = '1.0.1';
         if (!QRC_set_version($installed_version)) return false;
     }
+
+    // Update any config changes
+    USES_lib_install();
+    global $classifiedsConfigData;
+    require_once __DIR__ . '/install_defaults.php';
+    _update_config('ckassufueds', $classifiedsConfigData);
 
     // Final version in case there was no actual upgrade done
     if (!COM_checkVersion($installed_version, $code_version)) {
@@ -51,11 +55,11 @@ function QRC_upgrade()
 
 
 /**
-*   Update the plugin version number in the database
-*
-*   @param  string  $ver    New version
-*   @return boolean         True on success, False on failure
-*/
+ * Update the plugin version number in the database.
+ *
+ * @param   string  $ver    New version
+ * @return  boolean         True on success, False on failure
+ */
 function QRC_set_version($ver)
 {
     global $_QRC_CONF, $_TABLES;
