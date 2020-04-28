@@ -7,62 +7,67 @@
  * @author      Lee Garner <lee@leegarner.com>
  * @author      Yoshinori Tahara <taharaxp@gmail.com>
  * @author      Y.Swetake
- * @copyright   Copyright (c) 2010-2017 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2010-2020 Lee Garner <lee@leegarner.com>
  * @copyright   2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
  * @copyright   version 0.50g (C)2000-2005,Y.Swetake
  * @package     qrcode
- * @version     v1.0.2
+ * @version     v1.1.0
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
  */
 namespace qrCode;
 
+
 /**
  * Class to handle qrcodes.
  * @package qrcode
  */
-class qrCode
+class QR extends Code
 {
-    /**
-     * Arrray of properties accessed via __set() and __get().
-     * @var array
-     */
-    private $properties = array();
+    /** Image type, JPEG or PNG.
+     * @var string */
+    private $image_type = 'jpg';
 
-    /**
-     * Max data bits array, used by a couple of functions.
-     * @var array
-     */
+    /** Error Correction level.
+     * @var integer */
+    private $ecc_level = 'M';
+
+    /** Error correction code, based on ecc_level.
+     * @var integer */
+    private $ec = 0;
+
+    /** Module size.
+     * @var integer */
+    private $module_size = 8;
+
+    /** Version number.
+     * @var integer */
+    private $version = 1;
+
+    /** Max data bits array, used by a couple of functions.
+     * @var array */
     private $max_data_bits_array = array(
-            0,128,224,352,512,688,864,992,1232,1456,1728,
-            2032,2320,2672,2920,3320,3624,4056,4504,5016,5352,
-            5712,6256,6880,7312,8000,8496,9024,9544,10136,10984,
-            11640,12328,13048,13800,14496,15312,15936,16816,17728,18672,
+        0,128,224,352,512,688,864,992,1232,1456,1728,
+        2032,2320,2672,2920,3320,3624,4056,4504,5016,5352,
+        5712,6256,6880,7312,8000,8496,9024,9544,10136,10984,
+        11640,12328,13048,13800,14496,15312,15936,16816,17728,18672,
 
-            152,272,440,640,864,1088,1248,1552,1856,2192,
-            2592,2960,3424,3688,4184,4712,5176,5768,6360,6888,
-            7456,8048,8752,9392,10208,10960,11744,12248,13048,13880,
-            14744,15640,16568,17528,18448,19472,20528,21616,22496,23648,
+        152,272,440,640,864,1088,1248,1552,1856,2192,
+        2592,2960,3424,3688,4184,4712,5176,5768,6360,6888,
+        7456,8048,8752,9392,10208,10960,11744,12248,13048,13880,
+        14744,15640,16568,17528,18448,19472,20528,21616,22496,23648,
 
-            72,128,208,288,368,480,528,688,800,976,
-            1120,1264,1440,1576,1784,2024,2264,2504,2728,3080,
-            3248,3536,3712,4112,4304,4768,5024,5288,5608,5960,
-            6344,6760,7208,7688,7888,8432,8768,9136,9776,10208,
+        72,128,208,288,368,480,528,688,800,976,
+        1120,1264,1440,1576,1784,2024,2264,2504,2728,3080,
+        3248,3536,3712,4112,4304,4768,5024,5288,5608,5960,
+        6344,6760,7208,7688,7888,8432,8768,9136,9776,10208,
 
-            104,176,272,384,496,608,704,880,1056,1232,
-            1440,1648,1952,2088,2360,2600,2936,3176,3560,3880,
-            4096,4544,4912,5312,5744,6032,6464,6968,7288,7880,
-            8264,8920,9368,9848,10288,10832,11408,12016,12656,13328,
-        );
-
-    /**
-     * Indicate this image has been created.
-     * Saves a call to file_exists if getURL, getPath, etc. are called in
-     * the same session
-     * @var boolean
-     */
-    private $have_image = false;
+        104,176,272,384,496,608,704,880,1056,1232,
+        1440,1648,1952,2088,2360,2600,2936,3176,3560,3880,
+        4096,4544,4912,5312,5744,6032,6464,6968,7288,7880,
+        8264,8920,9368,9848,10288,10832,11408,12016,12656,13328,
+    );
 
 
     /**
@@ -77,91 +82,100 @@ class qrCode
         global $_QRC_CONF;
 
         $this->version = 1;
+        if (!isset($params['data'])) {
+            COM_errorLog("Missing data in constructor for " . __CLASS__);
+            return;
+        }
         $this->data = $params['data'];
-        $param_keys = array('module_size', 'ecc_level', 'image_type');
-        foreach ($param_keys as $key) {
-            $this->$key = empty($params[$key]) ? $_QRC_CONF[$key] : $params[$key];
+        if (isset($params['module_size'])) {
+            $this->setModuleSize($params['module_size']);
+        }
+        if (isset($params['ecc_level'])) {
+            $this->setECCLevel($params['ecc_level']);
+        }
+        if (isset($params['image_type'])) {
+            $this->setImageType($params['image_type']);
         }
         $this->setVersion();
-        $md5 = md5($this->data . 't=' . $this->image_type
-               . 's=' . $this->module_size . 'e=' . $this->ecc_level);
-        $this->filename = $md5 . $this->ext;
-        $this->filepath = $_QRC_CONF['img_path'];
+        $md5 = md5(
+            $this->data . 't=' . $this->image_type
+            . 's=' . $this->module_size . 'e=' . $this->ecc_level
+        );
+        $this->filename = $md5 . '.' . $this->ext;
+        parent::__construct($params);
     }
 
 
     /**
-     * Magic function to set a value into the properties array.
+     * Set the image type to render.
      *
-     * @param   string  $key    Property name to set
-     * @param   mixed   $value  Value to set
+     * @param   string  $value  Desired image type value
+     * @return  object  $this
      */
-    public function __set($key, $value)
+    private function setImageType($value)
     {
-        switch ($key) {
-        case 'image_type':
-            switch ($key) {
-            case 'jpg':
-            case 'jpeg':
-                $this->properties[$key] = 'jpg';
-                break;
-            case 'png':
-            default:
-                $this->properties[$key] = 'png';
-            }
+        switch ($value) {
+        case 'jpg':
+        case 'jpeg':
+            $this->image_type = 'jpg';
             break;
-
-        case 'ecc_level':
-            $value = strtoupper($value);
-            $this->properties[$key] = $value;
-            switch ($value) {
-            case 'L':
-                $this->properties['ec'] = 1;
-                break;
-            case 'Q':
-                $this->properties['ec'] = 3;
-                break;
-            case 'H':
-                $this->properties['ec'] = 2;
-                break;
-            case 'M':
-            default:
-                $this->properties['ec'] = 0;
-                break;
-            }
-            break;
-
-        case 'version':
-            if (empty($value)) $value = 1;
+        case 'png':
         default:
-            $this->properties[$key] = $value;
+            $this->image_type = 'png';
             break;
         }
+        return $this;
     }
 
 
     /**
-     * Returns a value from the properties array.
-     * Also gets custom values based on properties
+     * Set the error correction level.
+     * The ECC level is a string, while `ec` is an integer
+     * based on the string.
      *
-     * @param   string  $key    Name of property to return
-     * @return  mixed       Value of property, NULL if not defined
+     * @param   string  $value  ECC level indicator
+     * @return  object  $this
      */
-    public function __get($key)
+    private function setECCLevel($value)
     {
-        switch ($key) {
-        case 'ext':
-            // image type is either jpg or png
-            return '.' . $this->image_type;
+        $this->ecc_level = strtoupper($value);
+        switch ($this->ecc_level) {
+        case 'L':
+            $this->ec = 1;
             break;
+        case 'Q':
+            $this->ec = 3;
+            break;
+        case 'H':
+            $this->ec = 2;
+            break;
+        case 'M':
         default:
-            if (isset($this->properties[$key])) {
-                return $this->properties[$key];
+            $this->ec = 0;
+            break;
+        }
+        return $this;
+    }
+
+
+    /**
+     * Validate and set the module size.
+     *
+     * @param   integer $value  Module size to set.
+     * @return  object  $this
+     */
+    private function setModuleSize($value)
+    {
+        if ($value < 1) {
+            if ($this->image_type == 'jpg') {
+                $this->module_size = 8;
             } else {
-                return NULL;
+                $this->module_size = 2;
             }
-            break;
+        } else {
+            $this->module_size = (int)$value;
         }
+        return $this;
     }
 
 
@@ -231,22 +245,6 @@ class qrCode
 
 
     /**
-     * Get the image filename.
-     * Creates the image if not already done.
-     *
-     * @return  string  Image filename (not full path)
-     */
-    public function getImage()
-    {
-        if ($this->have_image || $this->createQRImage()) {
-            return $this->filename;
-        } else {
-            return NULL;
-        }
-    }
-
-
-    /**
      * Get the HTML to display a qrCode image.
      * Creates the image if not already done.
      *
@@ -258,7 +256,7 @@ class qrCode
     {
         global $_QRC_CONF;
 
-        if ($this->have_image || $this->createQRImage()) {
+        if ($this->have_image || $this->createImage()) {
             if (is_array($classes) && !empty($classes)) {
                 $cls = implode(' ', $classes);
             } else {
@@ -278,88 +276,12 @@ class qrCode
 
 
     /**
-     * Get the full path to a QRCode image file.
-     * Creates the image if not already done.
-     *
-     * @param   string  $filename   Image filename
-     * @return  string          Full path to the image file
-     */
-    public function getPath()
-    {
-        if ($this->have_image || $this->createQRImage()) {
-            return $this->filepath . $this->filename;
-        } else {
-            return '';
-        }
-    }
-
-
-    /**
-     * Get the URL to a QRCode image. Creates the image if not already done.
-     * This returns only the image URL, leaving it up to to the caller
-     * to create the complete image tag.
-     *
-     * @see     qrCode::getHTML()
-     * @param   string  $filename   Image filename
-     * @return  string      URL to render the image
-     */
-    function getURL()
-    {
-        if ($this->have_image || $this->createQRImage()) {
-            return QRC_URL . '/img.php?img=' . $this->filename;
-        } else {
-            return '';
-        }
-    }
-
-
-    /**
-     * Determine if an image file exists.
-     *
-     * @param   string  $filename   Filename only of image
-     * @return  boolean     True if the file exists, False if not
-     */
-    public static function file_exists($filename)
-    {
-        global $_QRC_CONF;
-
-        if (file_exists($_QRC_CONF['img_path'] . $filename)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    /**
-     * Get the mime-type value depending on the image type used.
-     *
-     * @param   string  $type   Type of image, JPG or PNG
-     * @return  string          Mime type corresponding to image type
-     */
-    public static function MimeType()
-    {
-        global $_QRC_CONF;
-
-        switch ($_QRC_CONF['image_type']) {
-        case 'jpg':
-            return 'image/jpeg';
-            break;
-        case 'png':
-        default:
-            return 'image/png';
-            break;
-        }
-    }
-
-
-    /**
      * Create the qrCode image and save it in the cach directory.
      * Returns True if the file already exists.
      *
      * @return  boolean     True on success, False on failure
      */
-    public function createQRImage()
+    public function createImage()
     {
         // Already have this image and info in the current object
         // Used to minimize the effect of multiple calls within a
@@ -369,8 +291,7 @@ class qrCode
         // Call the cache cleaning function.
         self::cleanCache();
 
-        $filespec = $this->filepath . $this->filename;
-        if (file_exists($filespec)) {
+        if ($this->file_exists()) {
             // image file already exists
             return true;
         }
@@ -801,58 +722,13 @@ class qrCode
         }
 
         ImageCopyResized($output_image,$base_image,0,0,0,0,$qrcode_image_size,$qrcode_image_size,$mib,$mib);
+        $filespec = $this->filepath . $this->filename;
         if ($this->image_type == 'jpg') {
             $this->have_image = imagejpeg($output_image, $filespec);
         } else {
             $this->have_image = imagepng($output_image, $filespec);
         }
         return $this->have_image;
-    }
-
-
-    /**
-    *   Clean out old QR code images.
-    *
-    *   @return boolean     True on success, False on failure or if not needed
-    */
-    public static function cleanCache()
-    {
-        global $_QRC_CONF;
-
-        if ($_QRC_CONF['cache_clean_interval'] < 0) {
-            // No cache cleaning required
-            return false;
-        }
-        $lastCleanFile = $_QRC_CONF['img_path'] . 'qrc_cacheLastCleanTime.touch';
-
-        //If this is a new timthumb installation we need to create the file
-        if (!is_file($lastCleanFile)) {
-            if (!touch($lastCleanFile)) {
-                COM_errorLog("QRCODE: Cannot touch cache clean file $lastCleanFile");
-            }
-            return false;
-        }
-
-        $cache_clean_interval = $_QRC_CONF['cache_clean_interval'] * 60;  // minutes
-        $cache_max_age = $_QRC_CONF['cache_max_age'] * 86400; // days
-        if (@filemtime($lastCleanFile) < (time() - $cache_clean_interval)) {
-            //Cache was last cleaned more than FILE_CACHE_TIME_BETWEEN_CLEANS ago
-            if (!touch($lastCleanFile)) {
-                COM_errorLog(__METHOD__ . ': Could not create cache clean timestamp file.');
-                return false;
-            }
-            $files = glob($_QRC_CONF['img_path'] . '*.' . $_QRC_CONF['image_type']);
-            if ($files) {
-                $timeAgo = time() - $cache_max_age;
-                foreach ($files as $file) {
-                    if (@filemtime($file) < $timeAgo) {
-                        @unlink($file);
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
 }

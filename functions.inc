@@ -5,10 +5,10 @@
  *
  * @author      Lee Garner <lee@leegarner.com>
  * @author      Yoshinori Tahara <taharaxp@gmail.com>
- * @copyright   Copyright (c) 2010-2017 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2010-2018 Lee Garner <lee@leegarner.com>
  * @copyright   2010 Yoshinori Tahara - dengen - taharaxp AT gmail DOT com
  * @package     qrcode
- * @version     v1.0.3
+ * @version     v1.1.0
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
@@ -113,7 +113,7 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
             'ecc_level' => $_QRC_CONF['ecc_level'],
             'image_type' => $_QRC_CONF['image_type'],
         );
-
+        $is_qrcode = true;
         switch ($autotag['parm1']) {
             case 'home':
             case 'top':
@@ -121,6 +121,10 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
                 break;
             case 'current':
                 $params['data'] = COM_buildURL(COM_getCurrentURL());
+                break;
+            case 'barcode':
+                // create a barcode, just using the remaining params.
+                $is_qrcode = false;
                 break;
             case 'text':
             default:
@@ -182,7 +186,11 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
 
         $block = '';
         if (!empty($params['data'])) {
-            $Q = new qrCode\qrCode($params);
+            if ($is_qrcode) {
+                $Q = new qrCode\QR($params);
+            } else {
+                $Q = new qrCode\Barcode($params);
+            }
             $block = $Q->getHTML($params);
         }
         $content = str_replace($autotag['tagstr'], $block, $content);
@@ -228,7 +236,7 @@ function phpblock_qrcode()
         'data' => COM_buildURL(COM_getCurrentURL()),
         'module_size' => '3',
     );
-    $Q = new qrCode\qrCode($params);
+    $Q = new qrCode\QR($params);
     return $Q->getHTML(array('phpblock'));
 }
 
@@ -290,7 +298,11 @@ function service_getcode_qrcode($args, &$output, &$svc_msg)
     if (!is_array($args)) return PLG_RET_ERROR;
     if (!isset($args['data'])) return PLG_RET_ERROR;
     $output = array();
-    $Q = new qrCode\qrCode($args);
+    if (isset($args['type']) && $args['type'] == 'barcode') {
+        $Q = new qrCode\Barcode($args);
+    } else {
+        $Q = new qrCode\QR($args);
+    }
     $output['img'] = $Q->getImage();
     if (!$output['img']) return PLG_RET_ERROR;
 
