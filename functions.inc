@@ -304,7 +304,9 @@ function service_getcode_qrcode($args, &$output, &$svc_msg)
         $Q = new qrCode\QR($args);
     }
     $output['img'] = $Q->getImage();
-    if (!$output['img']) return PLG_RET_ERROR;
+    if (!$output['img']) {
+        return PLG_RET_ERROR;
+    }
 
     $output['path'] = $Q->getPath();
     $output['html'] = $Q->getHTML();

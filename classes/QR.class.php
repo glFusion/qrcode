@@ -81,7 +81,6 @@ class QR extends Code
     {
         global $_QRC_CONF;
 
-        $this->version = 1;
         if (!isset($params['data'])) {
             COM_errorLog("Missing data in constructor for " . __CLASS__);
             return;
@@ -101,7 +100,7 @@ class QR extends Code
             $this->data . 't=' . $this->image_type
             . 's=' . $this->module_size . 'e=' . $this->ecc_level
         );
-        $this->filename = $md5 . '.' . $this->ext;
+        $this->filename = $md5 . '.' . $this->image_type;
         parent::__construct($params);
     }
 
