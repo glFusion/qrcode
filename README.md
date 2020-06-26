@@ -2,6 +2,12 @@
 The qrcode plugin for glFusion creates QR Code or barcode images for
 display in blocks, articles, pages, or by other plugins.
 
+## Requirements
+  * PHP: 7.2+
+  * PHP extensions
+    * GD
+    * MBString
+
 ## Autotag
 Basic Syntax: `[qrcode:_type_ data_string]`
 
