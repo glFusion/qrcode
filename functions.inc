@@ -139,7 +139,13 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
             $parm2 = explode(' ', $parm2);
             $skip = 0;
             foreach ($parm2 as $p) {
-                list($var,$val) = explode('=', $p);
+                $tmp = explode('=', $p);
+                $var = $tmp[0];
+                if (isset($tmp[1])) {
+                    $val = $tmp[1];
+                } else {
+                    $val = '';
+                }
                 switch ($var) {
                 case 's':
                 case 'size':
