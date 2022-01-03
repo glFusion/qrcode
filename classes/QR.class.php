@@ -287,6 +287,11 @@ class QR extends Code
         // single session
         if ($this->have_image) return true;
 
+        // Return false if GD library isn't available.
+        if (!function_exists('imagecreate')) {
+            return false;
+        }
+
         // Call the cache cleaning function.
         self::cleanCache();
 
@@ -702,9 +707,9 @@ class QR extends Code
             COM_errorLog('QRcode : Too large image size');
             return false;
         }
-        $output_image = ImageCreate($qrcode_image_size, $qrcode_image_size);
+        $output_image = imagecreate($qrcode_image_size, $qrcode_image_size);
         $image_path = $image_path . '/qrv' . $this->version .'.png';
-        $base_image = ImageCreateFromPNG($image_path);
+        $base_image = imagecreatefrompng($image_path);
 
         $col = array(
             0 => ImageColorAllocate($base_image,255,255,255),
