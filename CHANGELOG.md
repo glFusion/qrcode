@@ -1,8 +1,9 @@
 # Changelog: QRCode plugin for glFusion
 
-## 1.1.0 - TBD
+## 1.1.0 - 2022-01-04
 * Implement base Code class and child QR and Barcode classes
 * E_ALL fixes
+* Deprecate non-UTF8 language file
 
 ## 1.0.4 - 2018-01-03
 * Add missing data files
