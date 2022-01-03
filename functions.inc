@@ -207,18 +207,20 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
  */
 function plugin_getconfigelementhelp_qrcode($option, $doclang='english')
 {
-    if (!function_exists('LGLIB_getDocuRL'))
+    if (!function_exists('LGLIB_getDocuRL')) {
         return false;
-
-    $doc_url = LGLIB_getDocURL('config.html', Config::PI_NAME, $doclang);
-    if (empty($doc_url))
-        return false;
-
-    if (!empty($option)) {
-        $file .= '#desc_' . $option;
     }
 
-    return array($doc_url . $file, 0);
+    $doc_url = LGLIB_getDocURL('config', Config::PI_NAME, $doclang);
+    if (empty($doc_url)) {
+        return false;
+    }
+
+    if (!empty($option)) {
+        $doc_url .= '#desc_' . $option;
+    }
+
+    return array($doc_url, 0);
 }
 
 
