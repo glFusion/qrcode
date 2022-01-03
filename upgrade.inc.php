@@ -43,9 +43,9 @@ function QRC_upgrade()
 
     // Update any config changes
     USES_lib_install();
-    global $qrcodeConfigData;
+    global $qrcodeConfigItems;
     require_once __DIR__ . '/install_defaults.php';
-    _update_config('ckassufueds', $qrcodeConfigData);
+    _update_config('qrcode', $qrcodeConfigItems);
 
     // Final version in case there was no actual upgrade done
     if (!COM_checkVersion($installed_version, $code_version)) {
