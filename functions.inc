@@ -162,6 +162,10 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
                     $params['ecc_level'] = strtoupper($val);
                     $skip++;
                     break;
+                case 'sizefactor':
+                    $params['sizefactor'] = $val;
+                    $skip++;
+                    break;
                 default:
                     // nothing to do
                     break;

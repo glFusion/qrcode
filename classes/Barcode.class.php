@@ -45,14 +45,6 @@ class Barcode extends Code
      * @var boolean */
     private $print = true;
 
-    /*private $properties = array(
-        'size'      => 20,
-        'orientation' => 'horizontal',
-        'code_type' => 'code128',
-        'sizefactor' => 1,
-        'print'     => true,
-    );*/
-
 
     /**
      * Constructor. Sets up local properties from the supplied parameters.
@@ -66,6 +58,8 @@ class Barcode extends Code
         $this->data = $params['data'];
         if (isset($params['size'])) {
             $this->size = (int)$params['size'];
+        } elseif (isset($params['module_size'])) {
+            $this->size = (int)$params['module_size'];
         }
         if (isset($params['sizefactor'])) {
             $this->sizefactor = (int)$params['sizefactor'];
