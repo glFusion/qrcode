@@ -79,3 +79,35 @@ function QRC_set_version($ver)
     }
 }
 
+
+/**
+ * Remove deprecated files
+ * Errors in unlink() and rmdir() are ignored.
+ */
+function QRC_remove_old_files()
+{
+    global $_CONF;
+
+    $paths = array(
+        // private/plugins/shop
+        __DIR__ => array(
+            // 1.1.0
+            'classes/qrCode.class.php',
+            'language/english.php',
+        ),
+        // public_html/shop
+        $_CONF['path_html'] . 'qrcode' => array(
+        ),
+        // admin/plugins/shop
+        $_CONF['path_html'] . 'admin/plugins/qrcode' => array(
+        ),
+    );
+
+    foreach ($paths as $path=>$files) {
+        foreach ($files as $file) {
+            COM_errorLog("qrCode upgrade: removing $path/$file");
+            @unlink("$path/$file");
+        }
+    }
+}
+

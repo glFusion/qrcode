@@ -43,7 +43,7 @@ $langfile = __DIR__ . '/language/' . $_CONF['language'] . '.php';
 if (file_exists($langfile)) {
     require_once $langfile;
 } else {
-    require_once __DIR__ . '/language/english.php';
+    require_once __DIR__ . '/language/english_utf-8.php';
 }
 
 /**
