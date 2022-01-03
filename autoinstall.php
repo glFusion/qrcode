@@ -14,9 +14,9 @@
  * @filesource
  */
 
-require_once $_CONF['path'].'plugins/qrcode/qrcode.php';
+require_once __DIR__ . '/qrcode.php';
 
-global $INSTALL_plugin;
+global $INSTALL_plugin, $_QRC_CONF;
 $INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
     'installer' => array(
         'type' => 'installer',

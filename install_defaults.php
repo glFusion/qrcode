@@ -25,7 +25,7 @@ if (strpos(strtolower($_SERVER['PHP_SELF']), 'install_defaults.php') !== false) 
  * and not referenced any more once the plugin is installed
  * @var array
  */
-
+global $qrcodeConfigItems;
 $qrcodeConfigItems = array(
     array(
         'name' => 'sg_main',
@@ -114,16 +114,15 @@ $qrcodeConfigItems = array(
  */
 function plugin_initconfig_qrcode()
 {
-    global $qrcodeConfigData;
+    global $qrcodeConfigItems;
 
     $c = config::get_instance();
     if (!$c->group_exists('qrcode')) {
         USES_lib_install();
-        foreach ($qrcodeConfigData AS $cfgItem) {
+        foreach ($qrcodeConfigItems as $cfgItem) {
             _addConfigItem($cfgItem);
         }
     }
     return true;
 }
 
-?>
