@@ -1,18 +1,18 @@
 <?php
 /**
-*   Allow the downloading of original images to authorized visitors
-*  
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2012-2017 Lee Garner <lee@leegarner.com>
-*   @package    qrCode
-*   @version    1.0.2
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
-*               GNU Public License v2 or later
-*/
+ * Display cached images.
+ *  
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2012-2022 Lee Garner <lee@leegarner.com>
+ * @package     qrCode
+ * @version     v1.1.0
+ * @license     http://opensource.org/licenses/gpl-2.0.php 
+ *              GNU Public License v2 or later
+ */
 
 /**
-*   Include require glFusion common functions
-*/
+ * Include require glFusion common functions
+ */
 require_once '../lib-common.php';
 
 $img = isset($_GET['img']) ? $_GET['img'] : '';
@@ -20,8 +20,9 @@ $img = isset($_GET['img']) ? $_GET['img'] : '';
 if ($img == '' || !qrCode\Code::exists($img)) {
     die('');
 }
+use qrCode\Config;
 
-$file_path = $_QRC_CONF['img_path'] . $img;
+$file_path = Config::get('img_path') . $img;
 $fsize = @filesize($file_path);
 if ($fsize === FALSE) die('');
 
@@ -52,4 +53,3 @@ if ($file) {
   @fclose($file);
 }
 
-?>

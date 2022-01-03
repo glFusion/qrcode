@@ -53,8 +53,6 @@ class Barcode extends Code
      */
     public function __construct($params)
     {
-        global $_QRC_CONF;
-
         $this->data = $params['data'];
         if (isset($params['size'])) {
             $this->size = (int)$params['size'];
@@ -475,4 +473,3 @@ $sizefactor = (isset($_GET["sizefactor"])?$_GET["sizefactor"]:"1");*/
 
 }
 
-?>

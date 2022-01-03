@@ -11,12 +11,8 @@
  * @filesource
  */
 
-$_QRC_CONF['pi_version']        = '1.1.0';
-$_QRC_CONF['pi_name']           = 'qrcode';
-$_QRC_CONF['pi_display_name']   = 'QRcode';
-$_QRC_CONF['gl_version']        = '1.7.0';
-$_QRC_CONF['pi_url']            = 'http://www.leegarner.com';
+qrCode\Config::set('pi_version', '1.1.0');
+qrCode\Config::set('pi_display_name', 'qrCode');
+qrCode\Config::set('gl_version', '1.7.0');
+qrCode\Config::set('img_path', $_CONF['path'] . 'data/qrcode/');
 
-$_QRC_CONF['img_path'] = $_CONF['path'] . 'data/qrcode/';
-
-?>

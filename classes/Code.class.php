@@ -18,6 +18,7 @@
  */
 namespace qrCode;
 
+
 /**
  * Class to handle qrcodes.
  * @package qrcode
@@ -52,9 +53,7 @@ class Code
      */
     public function __construct($params)
     {
-        global $_QRC_CONF;
-
-        $this->filepath = $_QRC_CONF['img_path'];
+        $this->filepath = Config::get('img_path');
     }
 
 
@@ -103,7 +102,7 @@ class Code
     function getURL()
     {
         if ($this->have_image || $this->createImage()) {
-            return QRC_URL . '/img.php?img=' . $this->filename;
+            return Config::get('url') . '/img.php?img=' . $this->filename;
         } else {
             return '';
         }
@@ -118,8 +117,7 @@ class Code
      */
     public static function exists($filename)
     {
-        global $_QRC_CONF;
-        return file_exists($_QRC_CONF['img_path'] . $filename);
+        return file_exists(Config::get('img_path') . $filename);
     }
 
 
@@ -143,9 +141,7 @@ class Code
      */
     public static function MimeType()
     {
-        global $_QRC_CONF;
-
-        switch ($_QRC_CONF['image_type']) {
+        switch (Config::get('image_type')) {
         case 'jpg':
             return 'image/jpeg';
             break;
@@ -164,13 +160,11 @@ class Code
     */
     public static function cleanCache()
     {
-        global $_QRC_CONF;
-
-        if ($_QRC_CONF['cache_clean_interval'] < 0) {
+        if (Config::get('cache_clean_interval') < 0) {
             // No cache cleaning required
             return false;
         }
-        $lastCleanFile = $_QRC_CONF['img_path'] . 'qrc_cacheLastCleanTime.touch';
+        $lastCleanFile = Config::get('img_path') . 'qrc_cacheLastCleanTime.touch';
 
         //If this is a new timthumb installation we need to create the file
         if (!is_file($lastCleanFile)) {
@@ -180,15 +174,15 @@ class Code
             return false;
         }
 
-        $cache_clean_interval = $_QRC_CONF['cache_clean_interval'] * 60;  // minutes
-        $cache_max_age = $_QRC_CONF['cache_max_age'] * 86400; // days
+        $cache_clean_interval = Config::get('cache_clean_interval') * 60;  // minutes
+        $cache_max_age = Config::get('cache_max_age') * 86400; // days
         if (@filemtime($lastCleanFile) < (time() - $cache_clean_interval)) {
             //Cache was last cleaned more than FILE_CACHE_TIME_BETWEEN_CLEANS ago
             if (!touch($lastCleanFile)) {
                 COM_errorLog(__METHOD__ . ': Could not create cache clean timestamp file.');
                 return false;
             }
-            $files = glob($_QRC_CONF['img_path'] . '*.' . $_QRC_CONF['image_type']);
+            $files = glob(Config::get('img_path') . '*.' . Config::get('image_type'));
             if ($files) {
                 $timeAgo = time() - $cache_max_age;
                 foreach ($files as $file) {
@@ -204,4 +198,3 @@ class Code
 
 }
 
-?>

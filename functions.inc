@@ -19,17 +19,19 @@ if (!defined('GVERSION')) {
     die('This file can not be used on its own.');
 }
 
-/** Include the glFusion configuration class if not done already */
-require_once $_CONF['path_system'] . 'classes/config.class.php';
-
-$qrc_config = config::get_instance();
-$_QRC_CONF = $qrc_config->get_config('qrcode');
+spl_autoload_register(function($class)
+{
+    if (strpos($class, 'qrCode\\') === 0) {
+        $class = str_replace('qrCode\\', '', $class);
+        $path = __DIR__ . '/classes/' . $class . '.class.php';
+        if (file_exists($path)) {
+            include $path;
+        }
+    }
+});
+use qrCode\Config;
 
 require_once __DIR__ . '/qrcode.php';
-
-define('QRC_PI_PATH', __DIR__);
-define('QRC_URL', $_CONF['site_url'] . '/' . $_QRC_CONF['pi_name']);
-define('QRC_ADMIN_URL', $_CONF['site_admin_url'] . '/plugins/' . $_QRC_CONF['pi_name']);
 
 /** Include the user-supplied configuration file, if any */
 if (is_file(__DIR__ . '/config.php')) {
@@ -44,18 +46,6 @@ if (file_exists($langfile)) {
     require_once __DIR__ . '/language/english.php';
 }
 
-spl_autoload_register(function($class)
-{
-    if (strpos($class, 'qrCode\\') === 0) {
-        $class = str_replace('qrCode\\', '', $class);
-        $path = __DIR__ . '/classes/' . $class . '.class.php';
-        if (file_exists($path)) {
-            include $path;
-        }
-    }
-});
-
-
 /**
  * Returns the current plugin code version.
  *
@@ -63,8 +53,7 @@ spl_autoload_register(function($class)
  */
 function plugin_chkVersion_qrcode()
 {
-    global $_QRC_CONF;
-    return $_QRC_CONF['pi_version'];
+    return Config::get('pi_version');
 }
 
 
@@ -87,7 +76,7 @@ function plugin_autouninstall_qrcode()
  */
 function plugin_upgrade_qrcode()
 {
-    require_once QRC_PI_PATH . '/upgrade.inc.php';
+    require_once __DIR__ . '/upgrade.inc.php';
     return QRC_upgrade();
 }
 
@@ -103,15 +92,15 @@ function plugin_upgrade_qrcode()
  */
 function plugin_autotags_qrcode($op, $content = '', $autotag = '')
 {
-    global $_CONF, $_QRC_CONF;
+    global $_CONF;
 
     if ($op == 'tagname') {
         return 'qrcode';
     } else if ($op == 'parse') {
         $params = array(
-            'module_size' => $_QRC_CONF['module_size'],
-            'ecc_level' => $_QRC_CONF['ecc_level'],
-            'image_type' => $_QRC_CONF['image_type'],
+            'module_size' => Config::get('module_size'),
+            'ecc_level' => Config::get('ecc_level'),
+            'image_type' => Config::get('image_type'),
         );
         $is_qrcode = true;
         switch ($autotag['parm1']) {
@@ -218,12 +207,10 @@ function plugin_autotags_qrcode($op, $content = '', $autotag = '')
  */
 function plugin_getconfigelementhelp_qrcode($option, $doclang='english')
 {
-    global $_QRC_CONF;
-
     if (!function_exists('LGLIB_getDocuRL'))
         return false;
 
-    $doc_url = LGLIB_getDocURL('config.html', $_QRC_CONF['pi_name'], $doclang);
+    $doc_url = LGLIB_getDocURL('config.html', Config::PI_NAME, $doclang);
     if (empty($doc_url))
         return false;
 
@@ -258,7 +245,7 @@ function phpblock_qrcode()
  */
 function plugin_getheadercss_qrcode()
 {
-    global $_CONF, $_QRC_CONF;
+    global $_CONF;
 
     $styles = array();
     $files = array(
@@ -270,8 +257,8 @@ function plugin_getheadercss_qrcode()
     //  2. layout
     //  3. plugin/custom
     //  4. plugin (default distribution version)
-    $pi_css = QRC_PI_PATH . '/css/';
-    $layout_css = "{$_CONF['path_layout']}plugins/{$_QRC_CONF['pi_name']}/";
+    $pi_css = __DIR__ . '/css/';
+    $layout_css = "{$_CONF['path_layout']}plugins/" . Config::PI_NAME;
 
     foreach ($files as $file) {
         if (@file_exists($layout_css . 'custom/' . $file)) {
@@ -303,8 +290,6 @@ function plugin_getheadercss_qrcode()
  */
 function service_getcode_qrcode($args, &$output, &$svc_msg)
 {
-    global $_QRC_CONF;
-
     if (!is_array($args)) return PLG_RET_ERROR;
     if (!isset($args['data'])) return PLG_RET_ERROR;
     $output = array();
@@ -321,8 +306,7 @@ function service_getcode_qrcode($args, &$output, &$svc_msg)
     $output['path'] = $Q->getPath();
     $output['html'] = $Q->getHTML();
     $output['url']  = $Q->getURL();
-    $output['type'] = $_QRC_CONF['image_type'];
+    $output['type'] = Config::get('image_type');
     return PLG_RET_OK;
 }
 
-?>

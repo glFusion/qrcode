@@ -79,8 +79,6 @@ class QR extends Code
      */
     public function __construct($params)
     {
-        global $_QRC_CONF;
-
         if (!isset($params['data'])) {
             COM_errorLog("Missing data in constructor for " . __CLASS__);
             return;
@@ -253,8 +251,6 @@ class QR extends Code
      */
     public function getHTML($classes=array())
     {
-        global $_QRC_CONF;
-
         if ($this->have_image || $this->createImage()) {
             if (is_array($classes) && !empty($classes)) {
                 $cls = implode(' ', $classes);
@@ -305,8 +301,8 @@ class QR extends Code
             return false;
         }
 
-        $path       = QRC_PI_PATH . '/include/data';   // path to data files.
-        $image_path = QRC_PI_PATH . '/include/images'; // path to QRcode frame images.
+        $path       = Config::get('path') . '/include/data';   // path to data files.
+        $image_path = Config::get('path') . '/include/images'; // path to QRcode frame images.
         $version_ul = 40;                    // upper limit for version
         $data_bits = array();
         $data_value = array();
@@ -737,4 +733,3 @@ class QR extends Code
 
 }
 
-?>

@@ -1,15 +1,17 @@
 <?php
 /**
- * Perform upgrade functions for QRCode
+ * Perform upgrade functions for QRCode.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2016 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2016-2022 Lee Garner <lee@leegarner.com>
  * @package     qrcode
- * @version     v1.0.1
+ * @version     v1.1.0
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
  */
+use qrCode\Config;
+
 
 /**
  * Perform the upgrade of the QRCode plugin.
@@ -18,15 +20,15 @@
  */
 function QRC_upgrade()
 {
-    global $_TABLES, $_QRC_CONF, $_PLUGIN_INFO;
+    global $_TABLES, $_PLUGIN_INFO;
 
-    if (isset($_PLUGIN_INFO[$_QRC_CONF['pi_name']])) {
-        if (is_array($_PLUGIN_INFO[$_QRC_CONF['pi_name']])) {
+    if (isset($_PLUGIN_INFO[Config::PI_NAME])) {
+        if (is_array($_PLUGIN_INFO[Config::PI_NAME])) {
             // glFusion >= 1.6.6
-            $installed_ver = $_PLUGIN_INFO[$_QRC_CONF['pi_name']]['pi_version'];
+            $installed_ver = $_PLUGIN_INFO[Config::PI_NAME]['pi_version'];
         } else {
             // legacy
-            $installed_ver = $_PLUGIN_INFO[$_QRC_CONF['pi_name']];
+            $installed_ver = $_PLUGIN_INFO[Config::PI_NAME];
         }
     } else {
         return false;
@@ -61,20 +63,19 @@ function QRC_upgrade()
  */
 function QRC_set_version($ver)
 {
-    global $_QRC_CONF, $_TABLES;
+    global $_TABLES;
 
     $sql = "UPDATE {$_TABLES['plugins']} SET
                 pi_version = '$ver',
-                pi_gl_version = '{$_QRC_CONF['gl_version']}'
-            WHERE pi_name = '{$_QRC_CONF['pi_name']}'";
+                pi_gl_version = '" . Config::get('gl_version') . "
+            WHERE pi_name = ') . " . Config::PI_NAME . "'";
     DB_query($sql, 1);
     if (DB_error()) {
-        COM_errorLog("Error updating {$_QRC_CONF['pi_display_name']} to version $ver");
+        COM_errorLog("Error updating " . Config::get('pi_display_name') . " to version $ver");
         return false;
     } else {
-        COM_errorLog("{$_QRC_CONF['pi_display_name']} plugin was successfully updated to version $ver.");
+        COM_errorLog(Config::get('pi_display_name') . " plugin was successfully updated to version $ver.");
         return true;
     }
 }
 
-?>

@@ -15,9 +15,10 @@
  */
 
 require_once __DIR__ . '/qrcode.php';
+use qrCode\Config;
 
-global $INSTALL_plugin, $_QRC_CONF;
-$INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
+global $INSTALL_plugin;
+$INSTALL_plugin[Config::PI_NAME] = array(
     'installer' => array(
         'type' => 'installer',
         'version' => '1',
@@ -26,25 +27,25 @@ $INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
 
    'plugin' => array(
        'type'      => 'plugin',
-       'name'      => $_QRC_CONF['pi_name'],
-       'display'   => $_QRC_CONF['pi_display_name'],
-       'ver'       => $_QRC_CONF['pi_version'],
-       'gl_ver'    => $_QRC_CONF['gl_version'],
-       'url'       => $_QRC_CONF['pi_url'],
+       'name'      => Config::PI_NAME,
+       'display'   => Config::get('pi_display_name'),
+       'ver'       => Config::get('pi_version'),
+       'gl_ver'    => Config::get('gl_version'),
+       'url'       => Config::get('pi_url'),
    ),
 
    array('type' => 'group',
-       'group' => $_QRC_CONF['pi_name'] .' Admin',
+       'group' => Config::PI_NAME .' Admin',
        'desc' => 'Users in this group can administer the ' .
-                    $_QRC_CONF['pi_display_name'] . ' plugin',
+                    Config::get('pi_display_name') . ' plugin',
        'variable' => 'admin_group_id',
        'admin' => true,
        'addroot' => true,
     ),
 
     array('type' => 'feature',
-        'feature' => $_QRC_CONF['pi_name'] . '.admin',
-        'desc' => 'Can administer the ' . $_QRC_CONF['pi_display_name'] . ' plugin',
+        'feature' => Config::PI_NAME . '.admin',
+        'desc' => 'Can administer the ' . Config::get('pi_display_name') . ' plugin',
         'variable' => 'admin_feature_id',
     ),
 
@@ -56,7 +57,7 @@ $INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
 
     array(
         'type'  => 'mkdir',
-        'dirs' => array($_QRC_CONF['img_path']),
+        'dirs' => array(Config::get('img_path')),
     ),
 );
 
@@ -69,12 +70,12 @@ $INSTALL_plugin[$_QRC_CONF['pi_name']] = array(
  */
 function plugin_install_qrcode()
 {
-    global $_QRC_CONF, $_CONF, $INSTALL_plugin;
+    global $_CONF, $INSTALL_plugin;
 
-    COM_errorLog("Attempting to install the {$_QRC_CONF['pi_display_name']} plugin", 1);
+    COM_errorLog("Attempting to install the " . Config::get('pi_display_name') . " plugin", 1);
 
     USES_lib_install();
-    $ret = INSTALLER_install($INSTALL_plugin[$_QRC_CONF['pi_name']]);
+    $ret = INSTALLER_install($INSTALL_plugin[Config::PI_NAME);
     return $ret == 0 ? true : false;
 }
 
@@ -90,7 +91,7 @@ function plugin_load_configuration_qrcode()
     global $_CONF;
 
     require_once $_CONF['path_system'] . 'classes/config.class.php';
-    require_once dirname(__FILE__) . '/install_defaults.php';
+    require_once __DIR__ . '/install_defaults.php';
 
     return plugin_initconfig_qrcode();
 }
@@ -122,4 +123,3 @@ function QRC_autouninstall()
     );
 }
 
-?>
