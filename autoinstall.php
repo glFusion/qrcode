@@ -14,8 +14,9 @@
  * @filesource
  */
 
-require_once __DIR__ . '/qrcode.php';
+require_once __DIR__ . '/functions.inc';
 use qrCode\Config;
+require_once __DIR__ . '/qrcode.php';
 
 global $INSTALL_plugin;
 $INSTALL_plugin[Config::PI_NAME] = array(
@@ -75,7 +76,7 @@ function plugin_install_qrcode()
     COM_errorLog("Attempting to install the " . Config::get('pi_display_name') . " plugin", 1);
 
     USES_lib_install();
-    $ret = INSTALLER_install($INSTALL_plugin[Config::PI_NAME);
+    $ret = INSTALLER_install($INSTALL_plugin[Config::PI_NAME]);
     return $ret == 0 ? true : false;
 }
 
